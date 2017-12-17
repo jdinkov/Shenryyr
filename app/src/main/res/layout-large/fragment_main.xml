@@ -1,0 +1,54 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.wordpress.dnvsoft.android.shenryyr.LatestVideosFragment">
+
+    <ImageView
+        android:id="@+id/headerImageMain"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:contentDescription="@string/header_shen"
+        android:scaleType="fitCenter"
+        android:src="@drawable/shen_header_xlarge" />
+
+    <com.wordpress.dnvsoft.android.shenryyr.views.GridViewWithHeaderAndFooter
+        android:id="@+id/listViewMain"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:numColumns="2"
+        android:scrollbars="none" />
+
+    <TextView
+        android:id="@+id/headerTitleMain"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:background="#fafafa"
+        android:gravity="center_vertical"
+        android:paddingLeft="40dp"
+        android:paddingRight="40dp"
+        android:paddingStart="40dp"
+        android:textColor="#000000"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <ProgressBar
+        android:id="@+id/progressBarMain"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:indeterminate="false"
+        android:visibility="invisible" />
+
+    <ImageView
+        android:id="@+id/imageReloadMain"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|bottom"
+        android:layout_marginBottom="120dp"
+        android:contentDescription="@string/button_reload"
+        android:src="@mipmap/ic_reload"
+        android:visibility="invisible" />
+
+</FrameLayout>

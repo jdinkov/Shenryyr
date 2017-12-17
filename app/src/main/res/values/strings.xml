@@ -1,0 +1,49 @@
+<resources>
+    <string name="app_name">Shenryyr</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="menu_sort_by">Sort By</string>
+    <string name="playlists_title">Playlists</string>
+    <string name="latest_videos_title">Videos</string>
+    <string name="search_hint">Search</string>
+    <string name="no_network">No network connection available.</string>
+    <string name="async_loading">Loading…</string>
+    <string name="google_json_response_exception">There was a service error</string>
+    <string name="io_exception">Unable to connect to the Internet</string>
+
+    <string name="about_fragment">I am an Irish-German American currently living in Portland, Oregon. I often get salty and am a right stubborn bastard. Watch at your own risk. Check out YT for thousands of vids </string>
+    <string name="about_fragment_made">Made by Yordan Dinkov</string>
+
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="get_twitch_dialog">You need Twitch App to watch this content. Do you want to download it.</string>
+    <string name="service_missing">You need YouTube App to watch this content. Do you want to download it.</string>
+    <string name="service_disabled">YouTube App is disabled. Please enabled it.</string>
+    <string name="service_version_update_required">YouTube App is out of date. Please update it.</string>
+
+    <string name="videos_drawer">Videos</string>
+    <string name="playlists_drawer">Playlists</string>
+    <string name="search_drawer">Search</string>
+    <string name="twitch_drawer">Twitch</string>
+    <string name="about_drawer">About</string>
+    <string name="positive_button">OK</string>
+    <string name="negative_button">Cancel</string>
+    <string name="keyboard_enter">Search</string>
+    <string name="menu_sort_date">" Date "</string>
+    <string name="menu_sort_rating">" Rating "</string>
+    <string name="menu_sort_relevance">" Relevance "</string>
+    <string name="menu_sort_title">" Title "</string>
+    <string name="menu_sort_count">" View Count "</string>
+    <string name="menu_sort_newest">" Newest First "</string>
+    <string name="menu_sort_oldest">" Oldest First "</string>
+    <string name="toast_no_mached_content">This channel has no content that matched \'</string>
+    <string name="error_occurred">An error occurred while initializing the YouTube player.</string>
+    <string name="refresh">REFRESH</string>
+    <string name="load_more">Load more</string>
+    <string name="header_shen">Shenryyr</string>
+    <string name="button_reload">Reload</string>
+    <string name="sign_in_drawer">Sign In</string>
+    <string name="google_sign_in_image">google_log_in_image</string>
+
+</resources>
