@@ -118,7 +118,7 @@ public class PlaylistItemsFragment extends Fragment implements IConnected {
                     new TaskCompleted() {
                         @Override
                         public void onTaskComplete(YouTubeResult result) {
-                            if (!result.isCanceled()) {
+                            if (!result.isCanceled() && result.getItems() != null) {
                                 nextPageToken = result.getNextPageToken();
                                 items.addAll(result.getItems());
                                 listViewTitle.setText(getArguments().getString("PLAYLIST_TITLE"));

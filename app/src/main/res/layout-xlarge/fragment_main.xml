@@ -24,6 +24,8 @@
         android:layout_width="match_parent"
         android:layout_height="55dp"
         android:background="#fafafa"
+        android:clickable="true"
+        android:focusable="true"
         android:gravity="center_vertical"
         android:paddingLeft="40dp"
         android:paddingRight="40dp"

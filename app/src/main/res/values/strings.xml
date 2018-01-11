@@ -45,5 +45,10 @@
     <string name="button_reload">Reload</string>
     <string name="sign_in_drawer">Sign In</string>
     <string name="google_sign_in_image">google_log_in_image</string>
+    <string name="sign_out_menu_title">Sign Out</string>
+    <string name="sign_out_menu_message">Are you sure you want to Sign Out?</string>
+    <string name="activity_video_tab_videos">Videos</string>
+    <string name="activity_video_tab_comments">Comments</string>
+    <string name="activity_video_tab_description">Description</string>
 
 </resources>

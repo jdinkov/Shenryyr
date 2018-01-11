@@ -1,5 +1,6 @@
 package com.wordpress.dnvsoft.android.shenryyr.async_tasks;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.widget.Toast;
@@ -8,6 +9,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
@@ -22,13 +24,17 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.Collections;
 
-abstract class AsyncYoutube extends AsyncTask<Void, ProgressResults, YouTubeResult> {
+import static android.support.v4.app.ActivityCompat.startActivityForResult;
+
+abstract class AsyncYoutube extends AsyncTask<Void, Object, YouTubeResult> {
 
     String accountEmail;
     protected YouTubeResult result;
     protected YouTube youtube;
     private TaskCompleted callback;
     private static WeakReference<Context> context;
+
+    private static final int REQUEST_AUTHORIZATION = 1234;
 
     AsyncYoutube(Context c, TaskCompleted callback) {
         context = new WeakReference<>(c);
@@ -68,10 +74,20 @@ abstract class AsyncYoutube extends AsyncTask<Void, ProgressResults, YouTubeResu
     protected YouTubeResult doInBackground(Void... params) {
         try {
             result = DoItInBackground();
+        } catch (UserRecoverableAuthIOException e) {
+            startActivityForResult((Activity) getAppContext(), e.getIntent(), REQUEST_AUTHORIZATION, null);
         } catch (GoogleJsonResponseException ignored) {
-            publishProgress(ProgressResults.GOOGLE_JSON_RESPONSE);
+            String message = null;
+            if (ignored != null) {
+                message = ignored.getCause().getMessage();
+            }
+            publishProgress(ProgressResults.GOOGLE_JSON_RESPONSE, message);
         } catch (IOException e) {
-            publishProgress(ProgressResults.IO_EXCEPTION);
+            String message = null;
+            if (e != null) {
+                message = e.getCause().getMessage();
+            }
+            publishProgress(ProgressResults.IO_EXCEPTION, message);
         }
         return result;
     }
@@ -80,10 +96,10 @@ abstract class AsyncYoutube extends AsyncTask<Void, ProgressResults, YouTubeResu
     abstract YouTubeResult DoItInBackground() throws GoogleJsonResponseException, IOException;
 
     @Override
-    protected void onProgressUpdate(ProgressResults... values) {
+    protected void onProgressUpdate(Object... values) {
         super.onProgressUpdate(values);
         int errorString = 0;
-        switch (values[0]) {
+        switch ((ProgressResults) values[0]) {
             case GOOGLE_JSON_RESPONSE:
                 errorString = R.string.google_json_response_exception;
                 break;
@@ -91,7 +107,7 @@ abstract class AsyncYoutube extends AsyncTask<Void, ProgressResults, YouTubeResu
                 errorString = R.string.io_exception;
                 break;
         }
-        Toast.makeText(getAppContext(), errorString, Toast.LENGTH_LONG).show();
+        Toast.makeText(getAppContext(), getAppContext().getResources().getText(errorString) + "\n" + values[1], Toast.LENGTH_LONG).show();
         result.setCanceled(true);
     }
 

@@ -48,7 +48,7 @@ public class LatestVideosFragment extends MainFragment {
                     YoutubeInfo.UPLOADS_ID, nextPageToken, (long) 20, new TaskCompleted() {
                 @Override
                 public void onTaskComplete(YouTubeResult result) {
-                    if (!result.isCanceled()) {
+                    if (!result.isCanceled() && result.getItems() != null) {
                         nextPageToken = result.getNextPageToken();
                         items.addAll(result.getItems());
                         onPostExecute();

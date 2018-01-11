@@ -1,5 +1,7 @@
 package com.wordpress.dnvsoft.android.shenryyr;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -95,7 +97,7 @@ public class MainActivity extends AppCompatActivity
                     signIn();
                     break;
                 case R.id.navSignOut:
-                    signOut();
+                    onSignOutMenu();
                     break;
             }
 
@@ -135,6 +137,24 @@ public class MainActivity extends AppCompatActivity
                 super.onBackPressed();
             }
         }
+    }
+
+    private void onSignOutMenu() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle(R.string.sign_out_menu_title);
+        builder.setMessage(R.string.sign_out_menu_message);
+
+        builder.setPositiveButton(R.string.positive_button, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                signOut();
+            }
+        });
+
+        builder.setNegativeButton(R.string.negative_button, null);
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     @Override
