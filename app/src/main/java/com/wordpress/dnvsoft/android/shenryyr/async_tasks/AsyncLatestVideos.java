@@ -2,7 +2,6 @@ package com.wordpress.dnvsoft.android.shenryyr.async_tasks;
 
 import android.content.Context;
 
-import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.PlaylistItemListResponse;
 import com.wordpress.dnvsoft.android.shenryyr.YoutubeInfo;
@@ -27,8 +26,7 @@ public class AsyncLatestVideos extends AsyncYoutube {
     }
 
     @Override
-    @SuppressWarnings("DuplicateThrows")
-    YouTubeResult DoItInBackground() throws GoogleJsonResponseException, IOException {
+    YouTubeResult DoItInBackground() throws IOException {
         ArrayList<VideoItem> videoItems = new ArrayList<>();
         YouTube.PlaylistItems.List playListItems = youtube.playlistItems().list("id,snippet,status");
 

@@ -79,21 +79,20 @@ abstract class AsyncYoutube extends AsyncTask<Void, Object, YouTubeResult> {
         } catch (GoogleJsonResponseException ignored) {
             String message = null;
             if (ignored != null) {
-                message = ignored.getCause().getMessage();
+                message = ignored.getClass().getSimpleName() + "\n" + ignored.getStatusMessage();
             }
             publishProgress(ProgressResults.GOOGLE_JSON_RESPONSE, message);
         } catch (IOException e) {
             String message = null;
             if (e != null) {
-                message = e.getCause().getMessage();
+                message = e.getClass().getSimpleName();
             }
             publishProgress(ProgressResults.IO_EXCEPTION, message);
         }
         return result;
     }
 
-    @SuppressWarnings("DuplicateThrows")
-    abstract YouTubeResult DoItInBackground() throws GoogleJsonResponseException, IOException;
+    abstract YouTubeResult DoItInBackground() throws IOException;
 
     @Override
     protected void onProgressUpdate(Object... values) {
