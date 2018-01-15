@@ -23,7 +23,7 @@ import android.widget.Toast;
 import com.google.android.youtube.player.YouTubeThumbnailView;
 import com.squareup.picasso.Picasso;
 import com.wordpress.dnvsoft.android.shenryyr.adapters.VideoAdapter;
-import com.wordpress.dnvsoft.android.shenryyr.async_tasks.AsyncPlaylistItems;
+import com.wordpress.dnvsoft.android.shenryyr.async_tasks.AsyncPlayListItems;
 import com.wordpress.dnvsoft.android.shenryyr.async_tasks.AsyncPlaylistThumbnail;
 import com.wordpress.dnvsoft.android.shenryyr.async_tasks.TaskCompleted;
 import com.wordpress.dnvsoft.android.shenryyr.models.VideoItem;
@@ -35,7 +35,7 @@ import com.wordpress.dnvsoft.android.shenryyr.network.Network;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class PlaylistItemsFragment extends Fragment implements IConnected {
+public class PlayListItemsFragment extends Fragment implements IConnected {
 
     private int checkedRadioItem = 0;
     private int tempRadioItem = 0;
@@ -48,7 +48,7 @@ public class PlaylistItemsFragment extends Fragment implements IConnected {
     private String nextPageToken;
     private ArrayList<VideoItem> items = new ArrayList<>();
 
-    public PlaylistItemsFragment() {
+    public PlayListItemsFragment() {
     }
 
     @Override
@@ -113,7 +113,7 @@ public class PlaylistItemsFragment extends Fragment implements IConnected {
     protected void Connect() {
         if (Network.IsDeviceOnline(getActivity())) {
             onPreExecute();
-            AsyncPlaylistItems getItems = new AsyncPlaylistItems(
+            AsyncPlayListItems getItems = new AsyncPlayListItems(
                     getActivity(), PlaylistID, nextPageToken, (long) 50,
                     new TaskCompleted() {
                         @Override

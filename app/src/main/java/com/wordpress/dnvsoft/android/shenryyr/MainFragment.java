@@ -1,7 +1,6 @@
 package com.wordpress.dnvsoft.android.shenryyr;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -66,15 +65,9 @@ public abstract class MainFragment extends Fragment implements IConnected {
         gridViewMain.setAdapter(adapter);
         setHasOptionsMenu(true);
 
-        return view;
-    }
+        Connect();
 
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        if (items.isEmpty()) {
-            Connect();
-        }
+        return view;
     }
 
     View.OnClickListener onClick = new View.OnClickListener() {

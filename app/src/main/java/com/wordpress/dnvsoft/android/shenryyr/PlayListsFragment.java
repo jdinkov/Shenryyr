@@ -10,15 +10,15 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.wordpress.dnvsoft.android.shenryyr.async_tasks.AsyncPlaylists;
+import com.wordpress.dnvsoft.android.shenryyr.async_tasks.AsyncPlayLists;
 import com.wordpress.dnvsoft.android.shenryyr.async_tasks.TaskCompleted;
 import com.wordpress.dnvsoft.android.shenryyr.models.YouTubeResult;
 import com.wordpress.dnvsoft.android.shenryyr.network.Network;
 import com.wordpress.dnvsoft.android.shenryyr.views.GridViewWithHeaderAndFooter;
 
-public class PlaylistsFragment extends MainFragment {
+public class PlayListsFragment extends MainFragment {
 
-    public PlaylistsFragment() {
+    public PlayListsFragment() {
     }
 
     @Override
@@ -38,7 +38,7 @@ public class PlaylistsFragment extends MainFragment {
             data.putString("PLAYLIST_ID", items.get(position).getId());
             data.putString("PLAYLIST_TITLE", items.get(position).getTitle());
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-            Fragment fragment = new PlaylistItemsFragment();
+            Fragment fragment = new PlayListItemsFragment();
             fragment.setArguments(data);
             fragmentTransaction.replace(R.id.fragment_container, fragment);
             fragmentTransaction.addToBackStack("playlists_fragment");
@@ -50,7 +50,7 @@ public class PlaylistsFragment extends MainFragment {
     public void Connect() {
         if (Network.IsDeviceOnline(getActivity())) {
             onPreExecute();
-            AsyncPlaylists getItems = new AsyncPlaylists(
+            AsyncPlayLists getItems = new AsyncPlayLists(
                     getActivity(), nextPageToken, new TaskCompleted() {
                 @Override
                 public void onTaskComplete(YouTubeResult result) {

@@ -166,7 +166,7 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_youtube) {
             fragment = new LatestVideosFragment();
         } else if (id == R.id.nav_library) {
-            fragment = new PlaylistsFragment();
+            fragment = new PlayListsFragment();
         } else if (id == R.id.nav_search) {
             fragment = new SearchFragment();
         } else if (id == R.id.nav_twitch) {

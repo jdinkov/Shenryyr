@@ -20,18 +20,27 @@ public class SortMenu {
     }
 
     public void Sort() {
-        final String[] choice = {context.getString(R.string.menu_sort_date),
+        final String[] menuOption = {
+                context.getString(R.string.menu_sort_date),
                 context.getString(R.string.menu_sort_rating),
                 context.getString(R.string.menu_sort_relevance),
                 context.getString(R.string.menu_sort_title),
                 context.getString(R.string.menu_sort_count)};
 
+        final String[] orderParameter = {
+                "date",
+                "rating",
+                "relevance",
+                "title",
+                "viewcount"
+        };
+
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(R.string.menu_sort_by);
-        builder.setSingleChoiceItems(choice, checkedRadioItem, new DialogInterface.OnClickListener() {
+        builder.setSingleChoiceItems(menuOption, checkedRadioItem, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int item) {
                 checkedRadioItem = item;
-                searchOrder = choice[item];
+                searchOrder = orderParameter[item];
             }
         });
 

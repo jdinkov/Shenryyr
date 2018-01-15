@@ -11,11 +11,11 @@ import com.wordpress.dnvsoft.android.shenryyr.models.YouTubeResult;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class AsyncPlaylists extends AsyncYoutube {
+public class AsyncPlayLists extends AsyncYoutube {
 
     private String nextPageToken;
 
-    public AsyncPlaylists(Context context, String nextPageToken, TaskCompleted callback) {
+    public AsyncPlayLists(Context context, String nextPageToken, TaskCompleted callback) {
         super(context, callback);
         this.nextPageToken = nextPageToken;
     }
@@ -23,17 +23,17 @@ public class AsyncPlaylists extends AsyncYoutube {
     @Override
     YouTubeResult DoItInBackground() throws IOException {
         ArrayList<VideoItem> videoItems = new ArrayList<>();
-        YouTube.Playlists.List playlists = youtube.playlists().list("id, snippet");
+        YouTube.Playlists.List playLists = youtube.playlists().list("id, snippet");
 
-        playlists.setChannelId(YoutubeInfo.CHANNEL_ID);
-        playlists.setFields("items(id,snippet(title,thumbnails/medium/url)),nextPageToken");
-        playlists.setPageToken(nextPageToken);
-        playlists.setMaxResults((long) 20);
+        playLists.setChannelId(YoutubeInfo.CHANNEL_ID);
+        playLists.setFields("items(id,snippet(title,thumbnails/medium/url)),nextPageToken");
+        playLists.setPageToken(nextPageToken);
+        playLists.setMaxResults((long) 20);
         if (accountEmail == null) {
-            playlists.setKey(YoutubeInfo.DEVELOPER_KEY);
+            playLists.setKey(YoutubeInfo.DEVELOPER_KEY);
         }
 
-        PlaylistListResponse playlistListResponse = playlists.execute();
+        PlaylistListResponse playlistListResponse = playLists.execute();
         nextPageToken = playlistListResponse.getNextPageToken();
         int size = playlistListResponse.getItems().size();
         for (int i = 0; i < size; i++) {

@@ -13,13 +13,13 @@ import com.wordpress.dnvsoft.android.shenryyr.YoutubeInfo;
 import com.wordpress.dnvsoft.android.shenryyr.models.VideoItem;
 import com.wordpress.dnvsoft.android.shenryyr.models.YouTubeResult;
 
-public class AsyncPlaylistItems extends AsyncYoutube {
+public class AsyncPlayListItems extends AsyncYoutube {
 
     private String PlaylistID;
     private long maxResults;
     private String nextPageToken;
 
-    public AsyncPlaylistItems(Context context, String playlistID,
+    public AsyncPlayListItems(Context context, String playlistID,
                               String nextPageToken, long maxResults, TaskCompleted callback) {
         super(context, callback);
         this.PlaylistID = playlistID;
