@@ -50,5 +50,8 @@
     <string name="activity_video_tab_videos">Videos</string>
     <string name="activity_video_tab_comments">Comments</string>
     <string name="activity_video_tab_description">Description</string>
+    <string name="button_dislike">Dislike</string>
+    <string name="button_like">Like</string>
+    <string name="divider">Divider</string>
 
 </resources>

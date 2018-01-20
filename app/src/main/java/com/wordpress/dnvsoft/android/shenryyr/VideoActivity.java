@@ -1,35 +1,20 @@
 package com.wordpress.dnvsoft.android.shenryyr;
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.youtube.player.YouTubeBaseActivity;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerFragment;
-import com.google.android.youtube.player.YouTubePlayerView;
-import com.wordpress.dnvsoft.android.shenryyr.adapters.VideoAdapter;
+import com.wordpress.dnvsoft.android.shenryyr.async_tasks.AsyncGetVideoDescription;
 import com.wordpress.dnvsoft.android.shenryyr.async_tasks.AsyncSearch;
 import com.wordpress.dnvsoft.android.shenryyr.async_tasks.TaskCompleted;
 import com.wordpress.dnvsoft.android.shenryyr.menus.MissingServiceMenu;
@@ -40,16 +25,13 @@ import com.wordpress.dnvsoft.android.shenryyr.network.IConnected;
 import com.wordpress.dnvsoft.android.shenryyr.network.Network;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Stack;
 
 public class VideoActivity extends AppCompatActivity
         implements YouTubePlayer.OnInitializedListener, IConnected, VariablesFromActivity {
 
     private String videoID;
     private String nextPageToken;
+    private VideoItem videoItem;
     //private ListView listView;
     //private TextView textView;
     //private Button buttonLoadMore;
@@ -65,12 +47,14 @@ public class VideoActivity extends AppCompatActivity
     private ViewPager mViewPager;
     private YouTubePlayerFragment youTubePlayerFragment;
     private String videoTitle;
+    private int currentVideoTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video);
 
+        videoItem = new VideoItem();
         items = new ArrayList<>();
         //previous = new Stack<>();
 
@@ -120,45 +104,48 @@ public class VideoActivity extends AppCompatActivity
             //adapter.notifyDataSetChanged();
             playlistID = getIntent().getStringExtra("PLAYLIST_ID");
             //textView.setText(items.get(getItemPosition()).getTitle());
+            videoID = items.get(getItemPosition()).getId();
             videoTitle = items.get(getItemPosition()).getTitle();
+            getVideoDescription();
         } else {
             videoID = getIntent().getStringExtra("VIDEO_ID");
             //textView.setText(getIntent().getStringExtra("VIDEO_TITLE"));
             videoTitle = getIntent().getStringExtra("VIDEO_TITLE");
-            Connect();
+            getVideoDescription();
+            getRelatedVideos();
         }
     }
 
-    View.OnClickListener buttonLoadMoreOnClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Connect();
-        }
-    };
-
-    ListView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            if (youTubePlayer != null) {
-                if (videoPosition != Integer.MIN_VALUE) {
-                    videoPosition = items.size() - position;
-                    //textView.setText(items.get(getItemPosition()).getTitle());
-                    youTubePlayer.loadPlaylist(playlistID, videoPosition, 0);
-                } else {
-                    VideoItem current = new VideoItem();
-                    current.setId(videoID);
-                    //current.setTitle(textView.getText().toString());
-                    videoID = items.get(position - 1).getId();
-                    //textView.setText(items.get(position - 1).getTitle());
-                    youTubePlayer.loadVideo(videoID);
-                    //previous.push(current);
-                }
-                //listView.setSelection(0);
-            } else {
-                Toast.makeText(VideoActivity.this, R.string.error_occurred, Toast.LENGTH_LONG).show();
-            }
-        }
-    };
+//    View.OnClickListener buttonLoadMoreOnClickListener = new View.OnClickListener() {
+//        @Override
+//        public void onClick(View v) {
+//            getRelatedVideos();
+//        }
+//    };
+//
+//    ListView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
+//        @Override
+//        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//            if (youTubePlayer != null) {
+//                if (videoPosition != Integer.MIN_VALUE) {
+//                    videoPosition = items.size() - position;
+//                    //textView.setText(items.get(getItemPosition()).getTitle());
+//                    youTubePlayer.loadPlaylist(playlistID, videoPosition, 0);
+//                } else {
+//                    VideoItem current = new VideoItem();
+//                    current.setId(videoID);
+//                    //current.setTitle(textView.getText().toString());
+//                    videoID = items.get(position - 1).getId();
+//                    //textView.setText(items.get(position - 1).getTitle());
+//                    youTubePlayer.loadVideo(videoID);
+//                    //previous.push(current);
+//                }
+//                //listView.setSelection(0);
+//            } else {
+//                Toast.makeText(VideoActivity.this, R.string.error_occurred, Toast.LENGTH_LONG).show();
+//            }
+//        }
+//    };
 
     @Override
     public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer player, boolean b) {
@@ -199,9 +186,9 @@ public class VideoActivity extends AppCompatActivity
             });
 
             if (videoPosition != Integer.MIN_VALUE) {
-                youTubePlayer.loadPlaylist(playlistID, videoPosition, 0);
+                youTubePlayer.loadPlaylist(playlistID, videoPosition, currentVideoTime);
             } else {
-                youTubePlayer.loadVideo(videoID);
+                youTubePlayer.loadVideo(videoID, currentVideoTime);
             }
         }
     }
@@ -255,12 +242,37 @@ public class VideoActivity extends AppCompatActivity
 //        }
 //    }
 
-    private void Connect() {
+    private void getVideoDescription() {
+        if (Network.IsDeviceOnline(VideoActivity.this)) {
+            //String fields = "items(snippet(publishedAt,description),statistics(viewCount,likeCount,dislikeCount))";
+            AsyncGetVideoDescription getVideoDescription = new AsyncGetVideoDescription(VideoActivity.this,
+                    videoID, new TaskCompleted() {
+                @Override
+                public void onTaskComplete(YouTubeResult result) {
+                    if (!result.isCanceled() && result.getItems() != null) {
+                        videoItem.setPublishedAt("Published on " + result.getItems().get(0).getPublishedAt());
+                        videoItem.setDescription(result.getItems().get(0).getDescription());
+                        videoItem.setLikeCount(result.getItems().get(0).getLikeCount());
+                        videoItem.setDislikeCount(result.getItems().get(0).getDislikeCount());
+                        videoItem.setViewCount(result.getItems().get(0).getViewCount() + " views");
+                    }
+                    onPostExecute();
+                }
+            });
+
+            getVideoDescription.execute();
+        } else {
+            //onDisconnected();
+            Toast.makeText(getApplicationContext(), R.string.no_network, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void getRelatedVideos() {
         if (Network.IsDeviceOnline(VideoActivity.this)) {
             String searchOrder = "relevance";
             String type = "video";
             String fields = "items(id/videoId,snippet(title,thumbnails/medium/url)),nextPageToken";
-            onPreExecute();
+            //onPreExecute();
             AsyncSearch getItems = new AsyncSearch(getApplicationContext(),
                     getTagsByTitle(), searchOrder, type, fields, nextPageToken, new TaskCompleted() {
                 @Override
@@ -285,7 +297,7 @@ public class VideoActivity extends AppCompatActivity
             getItems.execute();
 
         } else {
-            onDisconnected();
+            //onDisconnected();
             Toast.makeText(getApplicationContext(), R.string.no_network, Toast.LENGTH_LONG).show();
         }
 
@@ -317,9 +329,13 @@ public class VideoActivity extends AppCompatActivity
     public void onPostExecute() {
         //footer.setVisibility(View.VISIBLE);
         //adapter.notifyDataSetChanged();
+        VideoFragmentDescription fragmentDescription =
+                (VideoFragmentDescription) mSectionsPagerAdapter.instantiateItem(mViewPager, 0);
+        fragmentDescription.updateFragment(videoItem);
+
         VideoFragmentVideos fragmentVideos =
-                (VideoFragmentVideos) mSectionsPagerAdapter.instantiateItem(mViewPager, mViewPager.getCurrentItem());
-        fragmentVideos.updateVideoList(items);
+                (VideoFragmentVideos) mSectionsPagerAdapter.instantiateItem(mViewPager, 1);
+        fragmentVideos.updateVideoList(items, nextPageToken);
     }
 
     @Override
@@ -340,6 +356,7 @@ public class VideoActivity extends AppCompatActivity
     @Override
     protected void onStop() {
         if (youTubePlayer != null) {
+            currentVideoTime = youTubePlayer.getCurrentTimeMillis();
             youTubePlayer.release();
         }
         super.onStop();
@@ -381,15 +398,15 @@ public class VideoActivity extends AppCompatActivity
             Fragment fragment = null;
             switch (position) {
                 case 0: {
-                    fragment = VideoFragmentVideos.newInstance(items, VideoActivity.this);
+                    fragment = VideoFragmentDescription.newInstance(videoTitle);
                 }
                 break;
                 case 1: {
-                    fragment = VideoFragmentVideos.newInstance(items, VideoActivity.this);
+                    fragment = VideoFragmentVideos.newInstance(items, playlistID, videoID, getVideoTags());
                 }
                 break;
                 case 2: {
-                    //fragment = VideoFragmentVideos.newInstance();
+                    fragment = VideoFragmentVideos.newInstance(items, playlistID, videoID, getVideoTags());
                 }
                 break;
             }

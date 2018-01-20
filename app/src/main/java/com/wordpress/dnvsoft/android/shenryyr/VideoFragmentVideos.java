@@ -25,7 +25,7 @@ import java.util.ArrayList;
 
 public class VideoFragmentVideos extends Fragment {
 
-    LinearLayout footer;
+    private LinearLayout footer;
     private Button buttonLoadMore;
     private VideoAdapter adapter;
     private String nextPageToken;
@@ -33,28 +33,30 @@ public class VideoFragmentVideos extends Fragment {
     private String videoTags;
     private String videoID;
     private ArrayList<VideoItem> videoItems = new ArrayList<>();
-    private static VariablesFromActivity variables;
 
     public VideoFragmentVideos() {
     }
 
-    public static VideoFragmentVideos newInstance(ArrayList<VideoItem> items, VariablesFromActivity variable) {
+    public static VideoFragmentVideos newInstance(
+            ArrayList<VideoItem> items, String playlistId, String videoID, String videoTags) {
         VideoFragmentVideos fragment = new VideoFragmentVideos();
-        variables = variable;
         Bundle bundle = new Bundle();
+        bundle.putString("PLAYLIST_ID", playlistId);
+        bundle.putString("VIDEO_ID", videoID);
+        bundle.putString("VIDEO_TAGS", videoTags);
         bundle.putSerializable("VIDEO_ITEMS", new VideoItemWrapper(items));
         fragment.setArguments(bundle);
         return fragment;
     }
 
-    public void updateVideoList(ArrayList<VideoItem> videoItem) {
+    public void updateVideoList(ArrayList<VideoItem> videoItem, String pageToken) {
         if (videoItem.isEmpty()) {
             buttonLoadMore.setText(R.string.refresh);
         } else {
             buttonLoadMore.setText(R.string.load_more);
             videoItems.addAll(videoItem);
         }
-        nextPageToken = variables.getNextPageToken();
+        nextPageToken = pageToken;
         adapter.notifyDataSetChanged();
         footer.setVisibility(View.VISIBLE);
     }
@@ -87,9 +89,9 @@ public class VideoFragmentVideos extends Fragment {
         ArrayList<VideoItem> tempList = videoItemWrapper.getItems();
         videoItems.addAll(tempList);
 
-        playlistId = variables.getPlaylistID();
-        videoTags = variables.getVideoTags();
-        videoID = variables.getVideoID();
+        playlistId = getArguments().getString("PLAYLIST_ID");
+        videoTags = getArguments().getString("VIDEO_TAGS");
+        videoID = getArguments().getString("VIDEO_ID");
 
         if (playlistId != null) {
             footer.setVisibility(View.GONE);

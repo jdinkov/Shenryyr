@@ -9,6 +9,12 @@ public class VideoItem implements Serializable {
     private String thumbnailMaxResUrl;
     private String ID;
     private String rating;
+    private String description;
+    private String viewCount;
+    private String likeCount;
+    private String dislikeCount;
+    private String commentCount;
+    private String publishedAt;
 
     public String getId() {
         return ID;
@@ -48,5 +54,53 @@ public class VideoItem implements Serializable {
 
     public void setThumbnailMaxResUrl(String thumbnailMaxResUrl) {
         this.thumbnailMaxResUrl = thumbnailMaxResUrl;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getViewCount() {
+        return viewCount;
+    }
+
+    public void setViewCount(String viewCount) {
+        this.viewCount = viewCount;
+    }
+
+    public String getLikeCount() {
+        return likeCount;
+    }
+
+    public void setLikeCount(String likeCount) {
+        this.likeCount = likeCount;
+    }
+
+    public String getDislikeCount() {
+        return dislikeCount;
+    }
+
+    public void setDislikeCount(String dislikeCount) {
+        this.dislikeCount = dislikeCount;
+    }
+
+    public String getCommentCount() {
+        return commentCount;
+    }
+
+    public void setCommentCount(String commentCount) {
+        this.commentCount = commentCount;
+    }
+
+    public String getPublishedAt() {
+        return publishedAt;
+    }
+
+    public void setPublishedAt(String publishedAt) {
+        this.publishedAt = publishedAt;
     }
 }
