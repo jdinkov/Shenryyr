@@ -26,7 +26,7 @@ import java.util.Collections;
 
 import static android.support.v4.app.ActivityCompat.startActivityForResult;
 
-abstract class AsyncYoutube extends AsyncTask<Void, Object, YouTubeResult> {
+abstract class AsyncYoutube extends AsyncTask<Void, String, YouTubeResult> {
 
     String accountEmail;
     protected YouTubeResult result;
@@ -79,15 +79,15 @@ abstract class AsyncYoutube extends AsyncTask<Void, Object, YouTubeResult> {
         } catch (GoogleJsonResponseException ignored) {
             String message = null;
             if (ignored != null) {
-                message = ignored.getClass().getSimpleName() + "\n" + ignored.getStatusMessage();
+                message = ignored.getStatusMessage();
             }
-            publishProgress(ProgressResults.GOOGLE_JSON_RESPONSE, message);
+            publishProgress(message);
         } catch (IOException e) {
             String message = null;
             if (e != null) {
                 message = e.getClass().getSimpleName();
             }
-            publishProgress(ProgressResults.IO_EXCEPTION, message);
+            publishProgress(message);
         }
         return result;
     }
@@ -95,18 +95,9 @@ abstract class AsyncYoutube extends AsyncTask<Void, Object, YouTubeResult> {
     abstract YouTubeResult DoItInBackground() throws IOException;
 
     @Override
-    protected void onProgressUpdate(Object... values) {
+    protected void onProgressUpdate(String... values) {
         super.onProgressUpdate(values);
-        int errorString = 0;
-        switch ((ProgressResults) values[0]) {
-            case GOOGLE_JSON_RESPONSE:
-                errorString = R.string.google_json_response_exception;
-                break;
-            case IO_EXCEPTION:
-                errorString = R.string.io_exception;
-                break;
-        }
-        Toast.makeText(getAppContext(), getAppContext().getResources().getText(errorString) + "\n" + values[1], Toast.LENGTH_LONG).show();
+        Toast.makeText(getAppContext(), values[0], Toast.LENGTH_LONG).show();
         result.setCanceled(true);
     }
 

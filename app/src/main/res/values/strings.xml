@@ -53,5 +53,5 @@
     <string name="button_dislike">Dislike</string>
     <string name="button_like">Like</string>
     <string name="divider">Divider</string>
-
+    <string name="unauthorized">Unauthorized</string>
 </resources>

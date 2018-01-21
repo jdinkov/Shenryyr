@@ -33,7 +33,6 @@ public class AsyncGetRating extends AsyncYoutube {
         }
 
         VideoGetRatingResponse response = videosRating.execute();
-        item.setId(response.getItems().get(0).getVideoId());
         item.setRating(response.getItems().get(0).getRating());
         items.add(item);
         result.setItems(items);

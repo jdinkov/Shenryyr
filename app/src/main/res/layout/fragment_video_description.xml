@@ -46,45 +46,81 @@
         <RadioGroup
             android:id="@+id/radioGroupLikedVideos"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="10dp"
+            android:layout_height="wrap_content"
             android:layout_marginEnd="10dp"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
             android:orientation="horizontal"
-            android:paddingBottom="5dp"
             android:paddingTop="5dp">
 
 
             <RadioButton
                 android:id="@+id/radioButtonLike"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="20dp"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginStart="20dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_marginStart="30dp"
                 android:layout_weight="1"
-                android:button="@drawable/like_button"
+                android:button="@drawable/radio_button_like"
                 android:text="@string/button_like"
+                android:textAlignment="center"
                 android:textColor="@color/textColor" />
 
             <RadioButton
                 android:id="@+id/radioButtonDislike"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="30dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_marginStart="30dp"
+                android:layout_weight="1"
+                android:button="@drawable/radio_button_dislike"
+                android:text="@string/button_dislike"
+                android:textAlignment="center"
+                android:textColor="@color/textColor" />
+
+        </RadioGroup>
+
+        <LinearLayout
+            android:id="@+id/likesCount"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginStart="10dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/likeCount"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="20dp"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
                 android:layout_marginStart="20dp"
                 android:layout_weight="1"
-                android:button="@drawable/dislike_button"
-                android:text="@string/button_dislike"
-                android:textColor="@color/textColor" />
+                android:textAlignment="center"
+                android:textSize="12sp" />
 
-        </RadioGroup>
+            <TextView
+                android:id="@+id/dislikeCount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginStart="20dp"
+                android:layout_weight="1"
+                android:textAlignment="center"
+                android:textSize="12sp" />
+        </LinearLayout>
 
         <ImageView
             android:id="@+id/divider2"
