@@ -23,13 +23,12 @@ import com.wordpress.dnvsoft.android.shenryyr.menus.MissingServiceMenu;
 import com.wordpress.dnvsoft.android.shenryyr.models.VideoItem;
 import com.wordpress.dnvsoft.android.shenryyr.models.VideoItemWrapper;
 import com.wordpress.dnvsoft.android.shenryyr.models.YouTubeResult;
-import com.wordpress.dnvsoft.android.shenryyr.network.IConnected;
 import com.wordpress.dnvsoft.android.shenryyr.network.Network;
 
 import java.util.ArrayList;
 
 public class VideoActivity extends AppCompatActivity
-        implements YouTubePlayer.OnInitializedListener, IConnected {
+        implements YouTubePlayer.OnInitializedListener {
 
     private String videoID;
     private String nextPageToken;
@@ -386,32 +385,32 @@ public class VideoActivity extends AppCompatActivity
         fragmentVideos.updateVideoList(items, nextPageToken);
     }
 
-    @Override
-    public void onPreExecute() {
-        //footer.setVisibility(View.INVISIBLE);
-    }
-
-    @Override
-    public void onPostExecute() {
-        //footer.setVisibility(View.VISIBLE);
-        //adapter.notifyDataSetChanged();
-//        VideoFragmentDescription fragmentDescription =
-//                (VideoFragmentDescription) mSectionsPagerAdapter.instantiateItem(mViewPager, 0);
-//        fragmentDescription.updateFragment(videoItem);
+//    @Override
+//    public void onPreExecute() {
+//        //footer.setVisibility(View.INVISIBLE);
+//    }
 //
-//        VideoFragmentVideos fragmentVideos =
-//                (VideoFragmentVideos) mSectionsPagerAdapter.instantiateItem(mViewPager, 1);
-//        fragmentVideos.updateVideoList(items, nextPageToken);
-    }
-
-    @Override
-    public void onDisconnected() {
-        //footer.setVisibility(View.GONE);
-    }
-
-    @Override
-    public void onCanceled() {
-    }
+//    @Override
+//    public void onPostExecute() {
+//        //footer.setVisibility(View.VISIBLE);
+//        //adapter.notifyDataSetChanged();
+////        VideoFragmentDescription fragmentDescription =
+////                (VideoFragmentDescription) mSectionsPagerAdapter.instantiateItem(mViewPager, 0);
+////        fragmentDescription.updateFragment(videoItem);
+////
+////        VideoFragmentVideos fragmentVideos =
+////                (VideoFragmentVideos) mSectionsPagerAdapter.instantiateItem(mViewPager, 1);
+////        fragmentVideos.updateVideoList(items, nextPageToken);
+//    }
+//
+//    @Override
+//    public void onDisconnected() {
+//        //footer.setVisibility(View.GONE);
+//    }
+//
+//    @Override
+//    public void onCanceled() {
+//    }
 
     @Override
     protected void onStart() {
