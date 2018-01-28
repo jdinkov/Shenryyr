@@ -65,7 +65,9 @@ public abstract class MainFragment extends Fragment implements IConnected {
         gridViewMain.setAdapter(adapter);
         setHasOptionsMenu(true);
 
-        Connect();
+        if (items.isEmpty()) {
+            Connect();
+        }
 
         return view;
     }
