@@ -29,7 +29,7 @@ import com.wordpress.dnvsoft.android.shenryyr.network.Network;
 import java.util.ArrayList;
 
 public class VideoActivity extends AppCompatActivity
-        implements YouTubePlayer.OnInitializedListener, IConnected, VariablesFromActivity {
+        implements YouTubePlayer.OnInitializedListener, IConnected {
 
     private String videoID;
     private String nextPageToken;
@@ -434,25 +434,25 @@ public class VideoActivity extends AppCompatActivity
         return TextUtils.join("|", tempArray);
     }
 
-    @Override
-    public String getPlaylistID() {
-        return playlistID;
-    }
-
-    @Override
-    public String getVideoTags() {
-        return getTagsByTitle();
-    }
-
-    @Override
-    public String getNextPageToken() {
-        return nextPageToken;
-    }
-
-    @Override
-    public String getVideoID() {
-        return videoID;
-    }
+//    @Override
+//    public String getPlaylistID() {
+//        return playlistID;
+//    }
+//
+//    @Override
+//    public String getVideoTags() {
+//        return getTagsByTitle();
+//    }
+//
+//    @Override
+//    public String getNextPageToken() {
+//        return nextPageToken;
+//    }
+//
+//    @Override
+//    public String getVideoID() {
+//        return videoID;
+//    }
 
     public class TabsAdapter extends FragmentPagerAdapter {
 
@@ -469,7 +469,7 @@ public class VideoActivity extends AppCompatActivity
                 }
                 break;
                 case 1: {
-                    fragment = VideoFragmentVideos.newInstance(items, playlistID, videoID, getVideoTags());
+                    fragment = VideoFragmentVideos.newInstance(items, playlistID, videoID, getTagsByTitle());
                 }
                 break;
                 case 2: {
