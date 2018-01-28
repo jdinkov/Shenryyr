@@ -37,7 +37,7 @@
     <string name="menu_sort_count">" View Count "</string>
     <string name="menu_sort_newest">" Newest First "</string>
     <string name="menu_sort_oldest">" Oldest First "</string>
-    <string name="toast_no_mached_content">This channel has no content that matched \'</string>
+    <string name="toast_no_matched_content">This channel has no content that matched \'</string>
     <string name="error_occurred">An error occurred while initializing the YouTube player.</string>
     <string name="refresh">REFRESH</string>
     <string name="load_more">Load more</string>
@@ -54,4 +54,7 @@
     <string name="button_like">Like</string>
     <string name="divider">Divider</string>
     <string name="unauthorized">Unauthorized</string>
+    <string name="removed_rating">You removed your rating</string>
+    <string name="liked_video">You liked this video</string>
+    <string name="disliked_video">You disliked this video</string>
 </resources>

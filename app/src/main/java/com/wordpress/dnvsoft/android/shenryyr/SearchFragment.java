@@ -170,7 +170,7 @@ public class SearchFragment extends Fragment implements IConnected {
                         nextPageToken = result.getNextPageToken();
                         items.addAll(result.getItems());
                         if (items.size() == 0) {
-                            String text = getActivity().getString(R.string.toast_no_mached_content) +
+                            String text = getActivity().getString(R.string.toast_no_matched_content) +
                                     searchParameter + "'";
                             Spannable centeredText = new SpannableString(text);
                             centeredText.setSpan(new AlignmentSpan.Standard(Layout.Alignment.ALIGN_CENTER),

@@ -149,8 +149,10 @@ public class VideoFragmentDescription extends Fragment {
                         public void onTaskComplete(YouTubeResult result) {
                             if (result.isCanceled()) {
                                 videoRating = tempRating;
-                                checkRadioGroup(videoRating);
                             }
+
+                            ratingChangedToast(videoRating);
+                            checkRadioGroup(videoRating);
                         }
                     });
 
@@ -165,4 +167,24 @@ public class VideoFragmentDescription extends Fragment {
             }
         }
     };
+
+    private void ratingChangedToast(String rating) {
+        String toastText = null;
+        switch (rating) {
+            case "none": {
+                toastText = getString(R.string.removed_rating);
+            }
+            break;
+            case "like": {
+                toastText = getString(R.string.liked_video);
+            }
+            break;
+            case "dislike": {
+                toastText = getString(R.string.disliked_video);
+            }
+            break;
+        }
+
+        Toast.makeText(getActivity(), toastText, Toast.LENGTH_SHORT).show();
+    }
 }
