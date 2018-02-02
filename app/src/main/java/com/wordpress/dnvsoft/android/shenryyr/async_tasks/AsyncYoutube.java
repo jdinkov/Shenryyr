@@ -17,12 +17,12 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.YouTubeScopes;
+import com.google.common.collect.Lists;
 import com.wordpress.dnvsoft.android.shenryyr.R;
 import com.wordpress.dnvsoft.android.shenryyr.models.YouTubeResult;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.util.Collections;
 
 import static android.support.v4.app.ActivityCompat.startActivityForResult;
 
@@ -43,7 +43,8 @@ abstract class AsyncYoutube extends AsyncTask<Void, String, YouTubeResult> {
 
         HttpRequestInitializer initializer;
         GoogleAccountCredential credential = GoogleAccountCredential.usingOAuth2(getAppContext(),
-                Collections.singleton(YouTubeScopes.YOUTUBE))
+                Lists.newArrayList(
+                        YouTubeScopes.YOUTUBE, YouTubeScopes.YOUTUBE_FORCE_SSL))
                 .setBackOff(new ExponentialBackOff());
 
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getAppContext());
@@ -76,10 +77,10 @@ abstract class AsyncYoutube extends AsyncTask<Void, String, YouTubeResult> {
             result = DoItInBackground();
         } catch (UserRecoverableAuthIOException e) {
             startActivityForResult((Activity) getAppContext(), e.getIntent(), REQUEST_AUTHORIZATION, null);
-        } catch (GoogleJsonResponseException ignored) {
+        } catch (GoogleJsonResponseException exception) {
             String message = null;
-            if (ignored != null) {
-                message = ignored.getStatusMessage();
+            if (exception != null) {
+                message = exception.getStatusMessage() + "\n" + exception.getDetails().getMessage();
             }
             publishProgress(message);
         } catch (IOException e) {

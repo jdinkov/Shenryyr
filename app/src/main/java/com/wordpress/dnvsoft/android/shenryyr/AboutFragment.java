@@ -8,11 +8,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.wordpress.dnvsoft.android.shenryyr.async_tasks.AsyncGetRating;
-import com.wordpress.dnvsoft.android.shenryyr.async_tasks.TaskCompleted;
-import com.wordpress.dnvsoft.android.shenryyr.models.YouTubeResult;
-import com.wordpress.dnvsoft.android.shenryyr.network.Network;
-
 public class AboutFragment extends Fragment {
 
     public AboutFragment() {
@@ -37,23 +32,39 @@ public class AboutFragment extends Fragment {
     View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Connect();
+//            Connect();
         }
     };
 
-    private void Connect() {
-        if (Network.IsDeviceOnline(getActivity())) {
-            AsyncGetRating getRating = new AsyncGetRating(getActivity(), new TaskCompleted() {
-                @Override
-                public void onTaskComplete(YouTubeResult result) {
-                    if (!result.isCanceled()) {
-                        textViewVideoId.setText(result.getItems().get(0).getId());
-                        textViewRating.setText(result.getItems().get(0).getRating());
-                    }
-                }
-            });
+//    private void Connect() {
+//        if (Network.IsDeviceOnline(getActivity())) {
+//            AsyncGetRating getRating = new AsyncGetRating(getActivity(), new TaskCompleted() {
+//                @Override
+//                public void onTaskComplete(YouTubeResult result) {
+//                    if (!result.isCanceled()) {
+//                        textViewVideoId.setText(result.getVideos().get(0).getId());
+//                        textViewRating.setText(result.getVideos().get(0).getRating());
+//                    }
+//                }
+//            });
+//
+//            getRating.execute();
+//        }
+//    }
 
-            getRating.execute();
-        }
-    }
+
+//    private void Connect() {
+//        if (Network.IsDeviceOnline(getActivity())) {
+//            AsyncGetCommentThreads commentThreads = new AsyncGetCommentThreads(getActivity(),
+//                    "relevance", "7wOPNKn4_ew", null, new TaskCompleted() {
+//                @Override
+//                public void onTaskComplete(YouTubeResult result) {
+////                    String asd = result.getCommentThread().get(0).getID();
+////                    String qwe = asd;
+//                }
+//            });
+//
+//            commentThreads.execute();
+//        }
+//    }
 }

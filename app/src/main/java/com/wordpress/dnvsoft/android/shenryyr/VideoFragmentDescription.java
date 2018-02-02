@@ -33,6 +33,9 @@ public class VideoFragmentDescription extends Fragment {
     private TextView textViewDislikeCount;
     private RadioButton radioButtonLike;
     private RadioButton radioButtonDislike;
+    private final String RATING_NONE = "none";
+    private final String RATING_LIKE = "like";
+    private final String RATING_DISLIKE = "dislike";
 
     public VideoFragmentDescription() {
     }
@@ -63,16 +66,16 @@ public class VideoFragmentDescription extends Fragment {
     private void checkRadioGroup(String rating) {
         if (rating != null) {
             switch (rating) {
-                case "none": {
+                case RATING_NONE: {
                     radioButtonLike.setChecked(false);
                     radioButtonDislike.setChecked(false);
                 }
                 break;
-                case "like": {
+                case RATING_LIKE: {
                     radioButtonLike.setChecked(true);
                 }
                 break;
-                case "dislike": {
+                case RATING_DISLIKE: {
                     radioButtonDislike.setChecked(true);
                 }
                 break;
@@ -126,18 +129,18 @@ public class VideoFragmentDescription extends Fragment {
                     final String tempRating = videoRating;
                     switch (v.getId()) {
                         case R.id.radioButtonLike: {
-                            if (videoRating.equals("like")) {
-                                videoRating = "none";
+                            if (videoRating.equals(RATING_LIKE)) {
+                                videoRating = RATING_NONE;
                             } else {
-                                videoRating = "like";
+                                videoRating = RATING_LIKE;
                             }
                         }
                         break;
                         case R.id.radioButtonDislike: {
-                            if (videoRating.equals("dislike")) {
-                                videoRating = "none";
+                            if (videoRating.equals(RATING_DISLIKE)) {
+                                videoRating = RATING_NONE;
                             } else {
-                                videoRating = "dislike";
+                                videoRating = RATING_DISLIKE;
                             }
                         }
                         break;
@@ -149,37 +152,37 @@ public class VideoFragmentDescription extends Fragment {
                         public void onTaskComplete(YouTubeResult result) {
                             if (result.isCanceled()) {
                                 videoRating = tempRating;
+                            } else {
+                                ratingChangedToast(videoRating);
                             }
 
-                            ratingChangedToast(videoRating);
                             checkRadioGroup(videoRating);
                         }
                     });
 
                     videosRate.execute();
                 } else {
-                    checkRadioGroup(videoRating);
                     Toast.makeText(getActivity(), R.string.unauthorized, Toast.LENGTH_LONG).show();
                 }
             } else {
-                checkRadioGroup(videoRating);
                 Toast.makeText(getActivity(), R.string.no_network, Toast.LENGTH_LONG).show();
             }
+            checkRadioGroup(videoRating);
         }
     };
 
     private void ratingChangedToast(String rating) {
         String toastText = null;
         switch (rating) {
-            case "none": {
+            case RATING_NONE: {
                 toastText = getString(R.string.removed_rating);
             }
             break;
-            case "like": {
+            case RATING_LIKE: {
                 toastText = getString(R.string.liked_video);
             }
             break;
-            case "dislike": {
+            case RATING_DISLIKE: {
                 toastText = getString(R.string.disliked_video);
             }
             break;

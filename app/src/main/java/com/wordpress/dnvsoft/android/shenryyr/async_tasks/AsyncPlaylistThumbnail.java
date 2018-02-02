@@ -39,7 +39,7 @@ public class AsyncPlaylistThumbnail extends AsyncYoutube {
         item.setThumbnailMaxResUrl(maxResUrl);
         items.add(item);
 
-        result.setItems(items);
+        result.setVideos(items);
         return result;
     }
 }

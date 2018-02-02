@@ -166,9 +166,9 @@ public class SearchFragment extends Fragment implements IConnected {
                     searchOrder, type, fields, nextPageToken, new TaskCompleted() {
                 @Override
                 public void onTaskComplete(YouTubeResult result) {
-                    if (!result.isCanceled() && result.getItems() != null) {
+                    if (!result.isCanceled() && result.getVideos() != null) {
                         nextPageToken = result.getNextPageToken();
-                        items.addAll(result.getItems());
+                        items.addAll(result.getVideos());
                         if (items.size() == 0) {
                             String text = getActivity().getString(R.string.toast_no_matched_content) +
                                     searchParameter + "'";

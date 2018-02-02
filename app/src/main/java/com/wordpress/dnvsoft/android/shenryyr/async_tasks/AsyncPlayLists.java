@@ -45,7 +45,7 @@ public class AsyncPlayLists extends AsyncYoutube {
         }
 
         result.setNextPageToken(nextPageToken);
-        result.setItems(videoItems);
+        result.setVideos(videoItems);
         return result;
     }
 }

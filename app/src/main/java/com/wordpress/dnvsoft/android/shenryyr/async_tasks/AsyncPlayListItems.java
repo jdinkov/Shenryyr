@@ -4,14 +4,13 @@ import android.content.Context;
 
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.PlaylistItemListResponse;
+import com.wordpress.dnvsoft.android.shenryyr.YoutubeInfo;
+import com.wordpress.dnvsoft.android.shenryyr.models.VideoItem;
+import com.wordpress.dnvsoft.android.shenryyr.models.YouTubeResult;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-
-import com.wordpress.dnvsoft.android.shenryyr.YoutubeInfo;
-import com.wordpress.dnvsoft.android.shenryyr.models.VideoItem;
-import com.wordpress.dnvsoft.android.shenryyr.models.YouTubeResult;
 
 public class AsyncPlayListItems extends AsyncYoutube {
 
@@ -58,7 +57,7 @@ public class AsyncPlayListItems extends AsyncYoutube {
         Collections.reverse(videoItems);
 
         result.setNextPageToken(nextPageToken);
-        result.setItems(videoItems);
+        result.setVideos(videoItems);
         return result;
     }
 }

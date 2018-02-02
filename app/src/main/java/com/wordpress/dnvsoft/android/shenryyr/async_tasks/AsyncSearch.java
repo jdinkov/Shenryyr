@@ -62,7 +62,7 @@ public class AsyncSearch extends AsyncYoutube {
         }
 
         result.setNextPageToken(pageToken);
-        result.setItems(videoItems);
+        result.setVideos(videoItems);
         return result;
     }
 }

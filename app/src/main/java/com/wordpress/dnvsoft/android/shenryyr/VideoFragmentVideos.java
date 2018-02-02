@@ -86,8 +86,7 @@ public class VideoFragmentVideos extends Fragment {
         listView.setAdapter(adapter);
 
         VideoItemWrapper videoItemWrapper = (VideoItemWrapper) getArguments().getSerializable("VIDEO_ITEMS");
-        ArrayList<VideoItem> tempList = videoItemWrapper.getItems();
-        videoItems.addAll(tempList);
+        videoItems.addAll(videoItemWrapper.getItems());
 
         playlistId = getArguments().getString("PLAYLIST_ID");
         videoTags = getArguments().getString("VIDEO_TAGS");
@@ -122,9 +121,9 @@ public class VideoFragmentVideos extends Fragment {
                     new TaskCompleted() {
                         @Override
                         public void onTaskComplete(YouTubeResult result) {
-                            if (!result.isCanceled() && result.getItems() != null) {
+                            if (!result.isCanceled() && result.getVideos() != null) {
                                 nextPageToken = result.getNextPageToken();
-                                for (VideoItem item : result.getItems()) {
+                                for (VideoItem item : result.getVideos()) {
                                     if (!item.getId().equals(videoID)) {
                                         videoItems.add(item);
                                     }

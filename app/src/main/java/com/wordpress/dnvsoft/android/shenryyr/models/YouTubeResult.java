@@ -6,7 +6,8 @@ public class YouTubeResult {
 
     private boolean isCanceled;
     private String nextPageToken;
-    private ArrayList<VideoItem> items;
+    private ArrayList<VideoItem> videos;
+    private ArrayList<YouTubeCommentThread> commentThread;
 
     public boolean isCanceled() {
         return isCanceled;
@@ -24,11 +25,19 @@ public class YouTubeResult {
         this.nextPageToken = nextPageToken;
     }
 
-    public ArrayList<VideoItem> getItems() {
-        return items;
+    public ArrayList<VideoItem> getVideos() {
+        return videos;
     }
 
-    public void setItems(ArrayList<VideoItem> items) {
-        this.items = items;
+    public void setVideos(ArrayList<VideoItem> videos) {
+        this.videos = videos;
+    }
+
+    public ArrayList<YouTubeCommentThread> getCommentThread() {
+        return commentThread;
+    }
+
+    public void setCommentThread(ArrayList<YouTubeCommentThread> comments) {
+        this.commentThread = comments;
     }
 }

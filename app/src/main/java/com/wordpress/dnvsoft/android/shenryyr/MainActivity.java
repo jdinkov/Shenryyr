@@ -207,7 +207,11 @@ public class MainActivity extends AppCompatActivity
         if (account != null) {
             navSignIn.setText(account.getDisplayName());
             navSignOut.setVisibility(View.VISIBLE);
-            Picasso.with(this).load(account.getPhotoUrl()).into(navGoogleImage);
+            if (account.getPhotoUrl() != null) {
+                Picasso.with(this).load(account.getPhotoUrl()).into(navGoogleImage);
+            } else {
+                navGoogleImage.setImageDrawable(getResources().getDrawable(R.mipmap.profile_pic));
+            }
         } else {
             navSignIn.setText(R.string.sign_in_drawer);
             navSignOut.setVisibility(View.INVISIBLE);

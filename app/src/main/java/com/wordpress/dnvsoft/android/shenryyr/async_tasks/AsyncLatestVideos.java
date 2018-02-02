@@ -40,7 +40,6 @@ public class AsyncLatestVideos extends AsyncYoutube {
 
         PlaylistItemListResponse playlistItemListResponse = playListItems.execute();
         nextPageToken = playlistItemListResponse.getNextPageToken();
-        playListItems.setPageToken(nextPageToken);
         int size = playlistItemListResponse.getItems().size();
         for (int i = 0; i < size; i++) {
             if (!playlistItemListResponse.getItems().get(i).getStatus().getPrivacyStatus().equals("private")) {
@@ -53,7 +52,7 @@ public class AsyncLatestVideos extends AsyncYoutube {
         }
 
         result.setNextPageToken(nextPageToken);
-        result.setItems(videoItems);
+        result.setVideos(videoItems);
         return result;
     }
 }

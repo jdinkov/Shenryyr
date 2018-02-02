@@ -118,9 +118,9 @@ public class PlayListItemsFragment extends Fragment implements IConnected {
                     new TaskCompleted() {
                         @Override
                         public void onTaskComplete(YouTubeResult result) {
-                            if (!result.isCanceled() && result.getItems() != null) {
+                            if (!result.isCanceled() && result.getVideos() != null) {
                                 nextPageToken = result.getNextPageToken();
-                                items.addAll(result.getItems());
+                                items.addAll(result.getVideos());
                                 listViewTitle.setText(getArguments().getString("PLAYLIST_TITLE"));
                                 onPostExecute();
                             } else {
@@ -134,7 +134,7 @@ public class PlayListItemsFragment extends Fragment implements IConnected {
                     getActivity(), PlaylistID, new TaskCompleted() {
                 @Override
                 public void onTaskComplete(YouTubeResult result) {
-                    Picasso.with(getActivity()).load(result.getItems().get(0).getThumbnailMaxResUrl()).into(listViewThumbnail);
+                    Picasso.with(getActivity()).load(result.getVideos().get(0).getThumbnailMaxResUrl()).into(listViewThumbnail);
                 }
             });
 

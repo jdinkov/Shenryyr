@@ -15,6 +15,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerFragment;
+import com.wordpress.dnvsoft.android.shenryyr.async_tasks.AsyncGetCommentThreads;
 import com.wordpress.dnvsoft.android.shenryyr.async_tasks.AsyncGetRating;
 import com.wordpress.dnvsoft.android.shenryyr.async_tasks.AsyncGetVideoDescription;
 import com.wordpress.dnvsoft.android.shenryyr.async_tasks.AsyncSearch;
@@ -22,6 +23,7 @@ import com.wordpress.dnvsoft.android.shenryyr.async_tasks.TaskCompleted;
 import com.wordpress.dnvsoft.android.shenryyr.menus.MissingServiceMenu;
 import com.wordpress.dnvsoft.android.shenryyr.models.VideoItem;
 import com.wordpress.dnvsoft.android.shenryyr.models.VideoItemWrapper;
+import com.wordpress.dnvsoft.android.shenryyr.models.YouTubeCommentThread;
 import com.wordpress.dnvsoft.android.shenryyr.models.YouTubeResult;
 import com.wordpress.dnvsoft.android.shenryyr.network.Network;
 
@@ -32,25 +34,20 @@ public class VideoActivity extends AppCompatActivity
 
     private String videoID;
     private String nextPageToken;
+    private String nextPageTokenCommentThread;
     private VideoItem videoItem;
     private String videoRating;
     private boolean isMinimized;
-    //private ListView listView;
-    //private TextView textView;
-    //private Button buttonLoadMore;
-    //private VideoAdapter adapter;
-    //private YouTubePlayerView youTubePlayerView;
     private ArrayList<VideoItem> items;
-    //private LinearLayout footer;
     private YouTubePlayer youTubePlayer;
     private int videoPosition;
     private String playlistID;
-    //private Stack<VideoItem> previous;
     private TabsAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
     private YouTubePlayerFragment youTubePlayerFragment;
     private String videoTitle;
     private int currentVideoTime;
+    private ArrayList<YouTubeCommentThread> comments;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,39 +56,13 @@ public class VideoActivity extends AppCompatActivity
 
         videoItem = new VideoItem();
         items = new ArrayList<>();
-        //previous = new Stack<>();
-
-        //listView = (ListView) findViewById(R.id.listViewVideo);
-
-//        youTubePlayerView = (YouTubePlayerView) findViewById(R.id.videoPlayer);
-//        youTubePlayerView.initialize(YoutubeInfo.DEVELOPER_KEY, VideoActivity.this);
-
-        //LinearLayout header = (LinearLayout) getLayoutInflater().inflate(R.layout.activity_video_title, listView, false);
-        //textView = (TextView) header.findViewById(R.id.textViewVideo);
-        //listView.addHeaderView(header, null, false);
-
-        //footer = (LinearLayout) getLayoutInflater().inflate(R.layout.footer_main, listView, false);
-        //buttonLoadMore = (Button) footer.findViewById(R.id.buttonFooterMain);
-        //footer.setVisibility(View.GONE);
-        //listView.addFooterView(footer, null, false);
-
-        //buttonLoadMore.setOnClickListener(buttonLoadMoreOnClickListener);
-        //listView.setOnItemClickListener(onItemClickListener);
-
-        //adapter = new VideoAdapter(VideoActivity.this, R.layout.list_view_items_play_list_items,
-        //        R.id.listViewTitlePlayListItems, R.id.listViewThumbnailPlayListItems, items);
-        //listView.setAdapter(adapter);
+        comments = new ArrayList<>();
 
         youTubePlayerFragment =
                 (YouTubePlayerFragment) getFragmentManager().findFragmentById(R.id.youtube_fragment);
-        //youTubePlayerFragment.initialize(YoutubeInfo.DEVELOPER_KEY, this);
-
-//        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-//        transaction.add(R.id.youTubeContainer, new YouTubeFragment());
-//        transaction.commit();
 
         mSectionsPagerAdapter = new TabsAdapter(getSupportFragmentManager());
-//
+
         mViewPager = (ViewPager) findViewById(R.id.container_video);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
@@ -104,24 +75,19 @@ public class VideoActivity extends AppCompatActivity
         if (videoPosition != Integer.MIN_VALUE) {
             VideoItemWrapper wrapper = (VideoItemWrapper) getIntent().getSerializableExtra("ITEMS");
             items.addAll(wrapper.getItems());
-            //adapter.notifyDataSetChanged();
             playlistID = getIntent().getStringExtra("PLAYLIST_ID");
-            //textView.setText(items.get(getItemPosition()).getTitle());
             videoID = items.get(getItemPosition()).getId();
             videoTitle = items.get(getItemPosition()).getTitle();
         } else {
             videoID = getIntent().getStringExtra("VIDEO_ID");
-            //textView.setText(getIntent().getStringExtra("VIDEO_TITLE"));
             videoTitle = getIntent().getStringExtra("VIDEO_TITLE");
         }
 
-        AsyncGetVideoDescription description = getVideoDescription();
-        AsyncGetRating rating = getVideoRating();
-
         if (Network.IsDeviceOnline(VideoActivity.this)) {
-            description.execute();
+            getVideoDescription().execute();
+            getCommentThreads().execute();
             if (GoogleSignIn.getLastSignedInAccount(VideoActivity.this) != null) {
-                rating.execute();
+                getVideoRating().execute();
             }
         } else {
             Toast.makeText(VideoActivity.this, R.string.no_network, Toast.LENGTH_LONG).show();
@@ -135,37 +101,6 @@ public class VideoActivity extends AppCompatActivity
             }
         }
     }
-
-//    View.OnClickListener buttonLoadMoreOnClickListener = new View.OnClickListener() {
-//        @Override
-//        public void onClick(View v) {
-//            getRelatedVideos();
-//        }
-//    };
-//
-//    ListView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
-//        @Override
-//        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//            if (youTubePlayer != null) {
-//                if (videoPosition != Integer.MIN_VALUE) {
-//                    videoPosition = items.size() - position;
-//                    //textView.setText(items.get(getItemPosition()).getTitle());
-//                    youTubePlayer.loadPlaylist(playlistID, videoPosition, 0);
-//                } else {
-//                    VideoItem current = new VideoItem();
-//                    current.setId(videoID);
-//                    //current.setTitle(textView.getText().toString());
-//                    videoID = items.get(position - 1).getId();
-//                    //textView.setText(items.get(position - 1).getTitle());
-//                    youTubePlayer.loadVideo(videoID);
-//                    //previous.push(current);
-//                }
-//                //listView.setSelection(0);
-//            } else {
-//                Toast.makeText(VideoActivity.this, R.string.error_occurred, Toast.LENGTH_LONG).show();
-//            }
-//        }
-//    };
 
     @Override
     public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer player, boolean b) {
@@ -234,149 +169,86 @@ public class VideoActivity extends AppCompatActivity
         }
     }
 
-//    @Override
-//    public void onConfigurationChanged(Configuration newConfig) {
-//        super.onConfigurationChanged(newConfig);
-//        LinearLayout.LayoutParams playerParams = (LinearLayout.LayoutParams) youTubePlayerView.getLayoutParams();
-//
-//        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-//            playerParams.height = LinearLayout.LayoutParams.MATCH_PARENT;
-//            if (youTubePlayer != null) {
-//                youTubePlayer.setFullscreen(true);
-//            }
-//        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-//            playerParams.height = LinearLayout.LayoutParams.WRAP_CONTENT;
-//            if (youTubePlayer != null) {
-//                youTubePlayer.setFullscreen(false);
-//            }
-//        }
-//    }
-
-//    @Override
-//    public void onBackPressed() {
-//
-//        if (!previous.isEmpty()) {
-//            VideoItem temp = previous.pop();
-//            videoID = temp.getId();
-//            //textView.setText(temp.getTitle());
-//            if (youTubePlayer != null) {
-//                youTubePlayer.loadVideo(videoID);
-//            }
-//            //listView.setSelection(0);
-//        } else {
-//            super.onBackPressed();
-//        }
-//    }
-
     private AsyncGetVideoDescription getVideoDescription() {
-        //if (Network.IsDeviceOnline(VideoActivity.this)) {
-        //String fields = "items(snippet(publishedAt,description),statistics(viewCount,likeCount,dislikeCount))";
-
         return new AsyncGetVideoDescription(VideoActivity.this, videoID, new TaskCompleted() {
             @Override
             public void onTaskComplete(YouTubeResult result) {
-                if (!result.isCanceled() && result.getItems() != null) {
-                    videoItem.setPublishedAt("Published on " + result.getItems().get(0).getPublishedAt());
-                    videoItem.setDescription(result.getItems().get(0).getDescription());
-                    videoItem.setLikeCount(result.getItems().get(0).getLikeCount());
-                    videoItem.setDislikeCount(result.getItems().get(0).getDislikeCount());
-                    videoItem.setViewCount(result.getItems().get(0).getViewCount() + " views");
+                if (!result.isCanceled() && result.getVideos() != null) {
+                    videoItem.setPublishedAt("Published on " + result.getVideos().get(0).getPublishedAt());
+                    videoItem.setDescription(result.getVideos().get(0).getDescription());
+                    videoItem.setLikeCount(result.getVideos().get(0).getLikeCount());
+                    videoItem.setDislikeCount(result.getVideos().get(0).getDislikeCount());
+                    videoItem.setViewCount(result.getVideos().get(0).getViewCount() + " views");
+                    videoItem.setCommentCount(result.getVideos().get(0).getCommentCount());
                     postDescriptionInFragment();
                 }
             }
         });
-
-//        }
-//        else {
-//            //onDisconnected();
-//            Toast.makeText(getApplicationContext(), R.string.no_network, Toast.LENGTH_LONG).show();
-//            return null;
-//        }
     }
 
     private AsyncGetRating getVideoRating() {
-        //if (Network.IsDeviceOnline(VideoActivity.this)) {
-
         return new AsyncGetRating(VideoActivity.this, videoID, new TaskCompleted() {
             @Override
             public void onTaskComplete(YouTubeResult result) {
                 if (!result.isCanceled()) {
-                    videoRating = result.getItems().get(0).getRating();
+                    videoRating = result.getVideos().get(0).getRating();
                     postRatingInFragment();
                 }
             }
         });
-
-//        } else {
-//            //onDisconnected();
-//            Toast.makeText(getApplicationContext(), R.string.no_network, Toast.LENGTH_LONG).show();
-//            return null;
-//        }
     }
 
     private AsyncSearch getRelatedVideos() {
-        //if (Network.IsDeviceOnline(VideoActivity.this)) {
         String searchOrder = "relevance";
         String type = "video";
         String fields = "items(id/videoId,snippet(title,thumbnails/medium/url)),nextPageToken";
-        //onPreExecute();
 
         return new AsyncSearch(VideoActivity.this,
                 getTagsByTitle(), searchOrder, type, fields, nextPageToken, new TaskCompleted() {
             @Override
             public void onTaskComplete(YouTubeResult result) {
-                if (!result.isCanceled() && result.getItems() != null) {
+                if (!result.isCanceled() && result.getVideos() != null) {
                     nextPageToken = result.getNextPageToken();
-                    for (VideoItem item : result.getItems()) {
+                    for (VideoItem item : result.getVideos()) {
                         if (!item.getId().equals(videoID)) {
                             items.add(item);
                         }
                     }
-//                    if (items.size() != 0) {
-//                        //buttonLoadMore.setText(R.string.load_more);
-//                    } else {
-//                        //buttonLoadMore.setText(R.string.refresh);
-//                    }
+
                     postRelatedVideosInFragment();
                 }
             }
         });
+    }
 
-//        } else {
-//            //onDisconnected();
-//            Toast.makeText(getApplicationContext(), R.string.no_network, Toast.LENGTH_LONG).show();
-//            return null;
-//        }
+    private AsyncGetCommentThreads getCommentThreads() {
+        return new AsyncGetCommentThreads(VideoActivity.this,
+                "relevance", videoID, nextPageTokenCommentThread, new TaskCompleted() {
+            @Override
+            public void onTaskComplete(YouTubeResult result) {
+                if (!result.isCanceled()) {
+                    nextPageTokenCommentThread = result.getNextPageToken();
+                    comments.addAll(result.getCommentThread());
+                    postCommentsInFragment();
+                }
+            }
+        });
     }
 
     private int getItemPosition() {
         return items.size() - videoPosition - 1;
     }
 
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//        LinearLayout.LayoutParams playerParams = (LinearLayout.LayoutParams) youTubePlayerView.getLayoutParams();
-//
-//        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-//            playerParams.height = LinearLayout.LayoutParams.MATCH_PARENT;
-//            if (youTubePlayer != null) {
-//                youTubePlayer.setFullscreen(true);
-//            }
-//        }
-//    }
+    private void postDescriptionInFragment() {
+        VideoFragmentDescription fragmentDescription =
+                (VideoFragmentDescription) mSectionsPagerAdapter.instantiateItem(mViewPager, 0);
+        fragmentDescription.updateFragment(videoItem);
+    }
 
     private void postRatingInFragment() {
         VideoFragmentDescription fragmentDescription =
                 (VideoFragmentDescription) mSectionsPagerAdapter.instantiateItem(mViewPager, 0);
         fragmentDescription.updateRadioGroup(videoRating);
-    }
-
-    private void postDescriptionInFragment() {
-        VideoFragmentDescription fragmentDescription =
-                (VideoFragmentDescription) mSectionsPagerAdapter.instantiateItem(mViewPager, 0);
-        fragmentDescription.updateFragment(videoItem);
-
     }
 
     private void postRelatedVideosInFragment() {
@@ -385,32 +257,11 @@ public class VideoActivity extends AppCompatActivity
         fragmentVideos.updateVideoList(items, nextPageToken);
     }
 
-//    @Override
-//    public void onPreExecute() {
-//        //footer.setVisibility(View.INVISIBLE);
-//    }
-//
-//    @Override
-//    public void onPostExecute() {
-//        //footer.setVisibility(View.VISIBLE);
-//        //adapter.notifyDataSetChanged();
-////        VideoFragmentDescription fragmentDescription =
-////                (VideoFragmentDescription) mSectionsPagerAdapter.instantiateItem(mViewPager, 0);
-////        fragmentDescription.updateFragment(videoItem);
-////
-////        VideoFragmentVideos fragmentVideos =
-////                (VideoFragmentVideos) mSectionsPagerAdapter.instantiateItem(mViewPager, 1);
-////        fragmentVideos.updateVideoList(items, nextPageToken);
-//    }
-//
-//    @Override
-//    public void onDisconnected() {
-//        //footer.setVisibility(View.GONE);
-//    }
-//
-//    @Override
-//    public void onCanceled() {
-//    }
+    private void postCommentsInFragment() {
+        VideoFragmentComments fragmentComments =
+                (VideoFragmentComments) mSectionsPagerAdapter.instantiateItem(mViewPager, 2);
+        fragmentComments.updateComments(comments);
+    }
 
     @Override
     protected void onStart() {
@@ -433,26 +284,6 @@ public class VideoActivity extends AppCompatActivity
         return TextUtils.join("|", tempArray);
     }
 
-//    @Override
-//    public String getPlaylistID() {
-//        return playlistID;
-//    }
-//
-//    @Override
-//    public String getVideoTags() {
-//        return getTagsByTitle();
-//    }
-//
-//    @Override
-//    public String getNextPageToken() {
-//        return nextPageToken;
-//    }
-//
-//    @Override
-//    public String getVideoID() {
-//        return videoID;
-//    }
-
     public class TabsAdapter extends FragmentPagerAdapter {
 
         TabsAdapter(FragmentManager fm) {
@@ -472,7 +303,7 @@ public class VideoActivity extends AppCompatActivity
                 }
                 break;
                 case 2: {
-                    fragment = VideoFragmentDescription.newInstance(videoID, videoTitle);
+                    fragment = VideoFragmentComments.newInstance(comments);
                 }
                 break;
             }
@@ -484,139 +315,4 @@ public class VideoActivity extends AppCompatActivity
             return 3;
         }
     }
-
-//    public class VideoFragmentVideos extends Fragment {
-//
-//        private ListView listView;
-//        private LinearLayout footer;
-//        private Button buttonLoadMore;
-//        private VideoAdapter adapter;
-//        private String nextPageToken;
-//        ArrayList<VideoItem> videoItems = new ArrayList<>();
-//        String videoId;
-//        //private String videoID;
-//
-//        public VideoFragmentVideos() {
-//        }
-//
-//        public VideoFragmentVideos newInstance(ArrayList<VideoItem> items) {
-//            VideoFragmentVideos fragment = new VideoFragmentVideos();
-//            Bundle bundle = new Bundle();
-//            bundle.putSerializable("VIDEO_ITEMS", items);
-//            fragment.setArguments(bundle);
-//            return fragment;
-//        }
-//
-//        public void updateVideoList(ArrayList<VideoItem> videoItem) {
-//            videoItems.addAll(videoItem);
-//            adapter.notifyDataSetChanged();
-//        }
-//
-//        @Nullable
-//        @Override
-//        public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-//            View view = inflater.inflate(R.layout.fragment_video_videos, container, false);
-//
-//            listView = (ListView) view.findViewById(R.id.listViewVideo);
-//
-//            footer = (LinearLayout) inflater.inflate(R.layout.footer_main, listView, false);
-//            buttonLoadMore = (Button) footer.findViewById(R.id.buttonFooterMain);
-//            footer.setVisibility(View.GONE);
-//            listView.addFooterView(footer, null, false);
-//
-//            buttonLoadMore.setOnClickListener(buttonLoadMoreOnClickListener);
-//            //listView.setOnItemClickListener(onItemClickListener);
-//
-//            adapter = new VideoAdapter(getContext(), R.layout.list_view_items_play_list_items,
-//                    R.id.listViewTitlePlayListItems, R.id.listViewThumbnailPlayListItems, videoItems);
-//            listView.setAdapter(adapter);
-//
-//            ArrayList<VideoItem> tempList;
-//            tempList = (ArrayList<VideoItem>) getArguments().getSerializable("VIDEO_ITEMS");
-//            if (tempList != null) {
-//                videoItems.addAll(tempList);
-//            }
-//
-//            adapter.notifyDataSetChanged();
-//            //connectToDB();
-//
-//            return view;
-//        }
-//
-//        private void getVideosFromYouTube() {
-//            String searchOrder = "date";
-//            String type = "video";
-//            String fields = "items(id/videoId,snippet(title,thumbnails/medium/url)),nextPageToken";
-//
-//            AsyncSearch getItems = new AsyncSearch(getContext(),
-//                    null, searchOrder, type, fields, nextPageToken,
-//                    new TaskCompleted() {
-//                        @Override
-//                        public void onTaskComplete(YouTubeResult result) {
-//                            if (!result.isCanceled()) {
-//                                nextPageToken = result.getNextPageToken();
-//                                for (VideoItem item : result.getItems()) {
-//                                    if (!item.getId().equals(videoId)) {
-//                                        videoItems.add(item);
-//                                    }
-//                                }
-////                                    if (items.size() != 0) {
-////                                        //buttonLoadMore.setText(R.string.load_more);
-////                                    } else {
-////                                        //buttonLoadMore.setText(R.string.refresh);
-////                                    }
-//                                adapter.notifyDataSetChanged();
-////                                    //onPostExecute();
-//                            }
-//                        }
-//                    });
-//
-//            getItems.execute();
-//        }
-//
-//        View.OnClickListener buttonLoadMoreOnClickListener = new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                getVideosFromYouTube();
-//            }
-//        };
-//
-//        ListView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//
-//
-//                ArrayList<VideoItem> tempArrayList = new ArrayList<>();
-//                tempArrayList.addAll(videoItems);
-//                int videoPosition;
-//                Intent intent = new Intent(getActivity(), VideoActivity.class);
-//                intent.putExtra("PLAYLIST_ID", getArguments().getString("PLAYLIST_ID"));
-//
-//                videoPosition = videoItems.size() - position;
-//
-//                intent.putExtra("VIDEO_POSITION", videoPosition);
-//                intent.putExtra("ITEMS", new VideoItemWrapper(tempArrayList));
-//                startActivity(intent);
-//
-////                  if (youTubePlayer != null) {
-////                    if (videoPosition != Integer.MIN_VALUE) {
-////                        videoPosition = items.size() - position;
-////                        textView.setText(items.get(getItemPosition()).getTitle());
-////                        youTubePlayer.loadPlaylist(playlistID, videoPosition, 0);
-////                    } else {
-////                        VideoItem current = new VideoItem();
-////                        current.setId(videoID);
-////                        current.setTitle(textView.getText().toString());
-////                        videoID = items.get(position - 1).getId();
-////                        textView.setText(items.get(position - 1).getTitle());
-////                        youTubePlayer.loadVideo(videoID);
-////                        previous.push(current);
-////                    }
-////                    listView.setSelection(0);
-////                } else {
-////                    Toast.makeText(VideoActivity.this, R.string.error_occurred, Toast.LENGTH_LONG).show();
-////                }
-//            }
-//        };
-//    }
 }

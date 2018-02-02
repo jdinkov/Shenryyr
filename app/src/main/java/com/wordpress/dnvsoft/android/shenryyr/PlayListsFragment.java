@@ -54,9 +54,9 @@ public class PlayListsFragment extends MainFragment {
                     getActivity(), nextPageToken, new TaskCompleted() {
                 @Override
                 public void onTaskComplete(YouTubeResult result) {
-                    if (!result.isCanceled() && result.getItems() != null) {
+                    if (!result.isCanceled() && result.getVideos() != null) {
                         nextPageToken = result.getNextPageToken();
-                        items.addAll(result.getItems());
+                        items.addAll(result.getVideos());
                         onPostExecute();
                     } else {
                         onCanceled();
