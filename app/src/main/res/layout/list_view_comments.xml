@@ -48,7 +48,7 @@
         android:layout_alignLeft="@+id/textViewCommentText"
         android:layout_alignStart="@+id/textViewCommentText"
         android:layout_below="@+id/textViewCommentText"
-        android:layout_marginBottom="3dp"
+        android:layout_marginBottom="5dp"
         android:layout_marginTop="7dp"
         android:orientation="horizontal">
 

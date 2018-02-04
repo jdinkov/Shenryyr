@@ -104,6 +104,10 @@ public class VideoFragmentVideos extends Fragment {
                         @Override
                         public void onTaskComplete(YouTubeResult result) {
                             if (!result.isCanceled() && result.getVideos() != null) {
+                                if (result.getVideos().size() == 20) {
+                                    footer.setVisibility(View.VISIBLE);
+                                }
+
                                 nextPageToken = result.getNextPageToken();
                                 for (VideoItem item : result.getVideos()) {
                                     if (!item.getId().equals(videoID)) {
@@ -114,8 +118,6 @@ public class VideoFragmentVideos extends Fragment {
                                 buttonLoadMore.setText(R.string.load_more);
                                 adapter.notifyDataSetChanged();
                             }
-
-                            footer.setVisibility(View.VISIBLE);
                         }
                     });
 

@@ -6,6 +6,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -24,6 +26,8 @@ public class VideoFragmentComments extends Fragment {
     private String nextPageTokenCommentThread;
     private CommentThreadAdapter adapter;
     private ArrayList<YouTubeCommentThread> commentThreads = new ArrayList<>();
+    private LinearLayout footer;
+    private Button buttonLoadMore;
 
     public VideoFragmentComments(String id) {
         videoID = id;
@@ -33,11 +37,7 @@ public class VideoFragmentComments extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (Network.IsDeviceOnline(getActivity())) {
-            getCommentThreads().execute();
-        } else {
-            Toast.makeText(getActivity(), R.string.no_network, Toast.LENGTH_LONG).show();
-        }
+        getCommentThreads();
     }
 
     @Override
@@ -45,6 +45,18 @@ public class VideoFragmentComments extends Fragment {
         View fragment = inflater.inflate(R.layout.fragment_video_comments, container, false);
 
         ListView listViewComments = (ListView) fragment.findViewById(R.id.listViewComments);
+
+        footer = (LinearLayout) inflater.inflate(R.layout.footer_main, listViewComments, false);
+        buttonLoadMore = (Button) footer.findViewById(R.id.buttonFooterMain);
+        if (Network.IsDeviceOnline(getActivity())) {
+            footer.setVisibility(View.INVISIBLE);
+        } else {
+            footer.setVisibility(View.VISIBLE);
+            buttonLoadMore.setText(R.string.refresh);
+        }
+        listViewComments.addFooterView(footer, null, false);
+
+        buttonLoadMore.setOnClickListener(buttonLoadMoreOnClickListener);
 
         adapter = new CommentThreadAdapter(getActivity(), R.layout.list_view_comments, commentThreads);
         listViewComments.setAdapter(adapter);
@@ -54,17 +66,37 @@ public class VideoFragmentComments extends Fragment {
         return fragment;
     }
 
-    private AsyncGetCommentThreads getCommentThreads() {
-        return new AsyncGetCommentThreads(getActivity(), "relevance", videoID, nextPageTokenCommentThread,
-                new TaskCompleted() {
-                    @Override
-                    public void onTaskComplete(YouTubeResult result) {
-                        if (!result.isCanceled()) {
-                            nextPageTokenCommentThread = result.getNextPageToken();
-                            commentThreads.addAll(result.getCommentThread());
-                            adapter.notifyDataSetChanged();
+    View.OnClickListener buttonLoadMoreOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            footer.setVisibility(View.INVISIBLE);
+            getCommentThreads();
+        }
+    };
+
+    private void getCommentThreads() {
+        if (Network.IsDeviceOnline(getActivity())) {
+            AsyncGetCommentThreads asyncGetCommentThreads = new AsyncGetCommentThreads(getActivity(),
+                    "relevance", videoID, nextPageTokenCommentThread,
+                    new TaskCompleted() {
+                        @Override
+                        public void onTaskComplete(YouTubeResult result) {
+                            if (!result.isCanceled() && result.getCommentThread() != null) {
+                                if (result.getCommentThread().size() == 20) {
+                                    footer.setVisibility(View.VISIBLE);
+                                }
+
+                                nextPageTokenCommentThread = result.getNextPageToken();
+                                commentThreads.addAll(result.getCommentThread());
+                                buttonLoadMore.setText(R.string.load_more);
+                                adapter.notifyDataSetChanged();
+                            }
                         }
-                    }
-                });
+                    });
+
+            asyncGetCommentThreads.execute();
+        } else {
+            Toast.makeText(getActivity(), R.string.no_network, Toast.LENGTH_LONG).show();
+        }
     }
 }

@@ -115,7 +115,9 @@ public abstract class MainFragment extends Fragment implements IConnected {
     public void onPostExecute() {
         imageViewReload.setVisibility(View.GONE);
         progressBar.setVisibility(View.GONE);
-        footer.setVisibility(View.VISIBLE);
+        if (items.size() != 0 && items.size() % 20 == 0) {
+            footer.setVisibility(View.VISIBLE);
+        }
         adapter.notifyDataSetChanged();
     }
 
