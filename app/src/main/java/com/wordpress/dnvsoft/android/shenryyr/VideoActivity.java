@@ -11,21 +11,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.widget.Toast;
 
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerFragment;
-import com.wordpress.dnvsoft.android.shenryyr.async_tasks.AsyncGetCommentThreads;
-import com.wordpress.dnvsoft.android.shenryyr.async_tasks.AsyncGetRating;
-import com.wordpress.dnvsoft.android.shenryyr.async_tasks.AsyncGetVideoDescription;
-import com.wordpress.dnvsoft.android.shenryyr.async_tasks.AsyncSearch;
-import com.wordpress.dnvsoft.android.shenryyr.async_tasks.TaskCompleted;
 import com.wordpress.dnvsoft.android.shenryyr.menus.MissingServiceMenu;
 import com.wordpress.dnvsoft.android.shenryyr.models.VideoItem;
 import com.wordpress.dnvsoft.android.shenryyr.models.VideoItemWrapper;
-import com.wordpress.dnvsoft.android.shenryyr.models.YouTubeCommentThread;
-import com.wordpress.dnvsoft.android.shenryyr.models.YouTubeResult;
-import com.wordpress.dnvsoft.android.shenryyr.network.Network;
 
 import java.util.ArrayList;
 
@@ -33,43 +24,21 @@ public class VideoActivity extends AppCompatActivity
         implements YouTubePlayer.OnInitializedListener {
 
     private String videoID;
-    private String nextPageToken;
-    private String nextPageTokenCommentThread;
-    private VideoItem videoItem;
-    private String videoRating;
     private boolean isMinimized;
     private ArrayList<VideoItem> items;
     private YouTubePlayer youTubePlayer;
     private int videoPosition;
     private String playlistID;
-    private TabsAdapter mSectionsPagerAdapter;
-    private ViewPager mViewPager;
     private YouTubePlayerFragment youTubePlayerFragment;
     private String videoTitle;
     private int currentVideoTime;
-    private ArrayList<YouTubeCommentThread> comments;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video);
 
-        videoItem = new VideoItem();
         items = new ArrayList<>();
-        comments = new ArrayList<>();
-
-        youTubePlayerFragment =
-                (YouTubePlayerFragment) getFragmentManager().findFragmentById(R.id.youtube_fragment);
-
-        mSectionsPagerAdapter = new TabsAdapter(getSupportFragmentManager());
-
-        mViewPager = (ViewPager) findViewById(R.id.container_video);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
-
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-
-        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
 
         videoPosition = getIntent().getIntExtra("VIDEO_POSITION", Integer.MIN_VALUE);
         if (videoPosition != Integer.MIN_VALUE) {
@@ -83,23 +52,18 @@ public class VideoActivity extends AppCompatActivity
             videoTitle = getIntent().getStringExtra("VIDEO_TITLE");
         }
 
-        if (Network.IsDeviceOnline(VideoActivity.this)) {
-            getVideoDescription().execute();
-            getCommentThreads().execute();
-            if (GoogleSignIn.getLastSignedInAccount(VideoActivity.this) != null) {
-                getVideoRating().execute();
-            }
-        } else {
-            Toast.makeText(VideoActivity.this, R.string.no_network, Toast.LENGTH_LONG).show();
-        }
+        youTubePlayerFragment =
+                (YouTubePlayerFragment) getFragmentManager().findFragmentById(R.id.youtube_fragment);
 
-        if (videoPosition == Integer.MIN_VALUE) {
-            if (Network.IsDeviceOnline(VideoActivity.this)) {
-                getRelatedVideos().execute();
-            } else {
-                Toast.makeText(VideoActivity.this, R.string.no_network, Toast.LENGTH_LONG).show();
-            }
-        }
+        TabsAdapter mSectionsPagerAdapter = new TabsAdapter(getSupportFragmentManager());
+
+        ViewPager mViewPager = (ViewPager) findViewById(R.id.container_video);
+        mViewPager.setAdapter(mSectionsPagerAdapter);
+
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+
+        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
     }
 
     @Override
@@ -169,98 +133,8 @@ public class VideoActivity extends AppCompatActivity
         }
     }
 
-    private AsyncGetVideoDescription getVideoDescription() {
-        return new AsyncGetVideoDescription(VideoActivity.this, videoID, new TaskCompleted() {
-            @Override
-            public void onTaskComplete(YouTubeResult result) {
-                if (!result.isCanceled() && result.getVideos() != null) {
-                    videoItem.setPublishedAt("Published on " + result.getVideos().get(0).getPublishedAt());
-                    videoItem.setDescription(result.getVideos().get(0).getDescription());
-                    videoItem.setLikeCount(result.getVideos().get(0).getLikeCount());
-                    videoItem.setDislikeCount(result.getVideos().get(0).getDislikeCount());
-                    videoItem.setViewCount(result.getVideos().get(0).getViewCount() + " views");
-                    videoItem.setCommentCount(result.getVideos().get(0).getCommentCount());
-                    postDescriptionInFragment();
-                }
-            }
-        });
-    }
-
-    private AsyncGetRating getVideoRating() {
-        return new AsyncGetRating(VideoActivity.this, videoID, new TaskCompleted() {
-            @Override
-            public void onTaskComplete(YouTubeResult result) {
-                if (!result.isCanceled()) {
-                    videoRating = result.getVideos().get(0).getRating();
-                    postRatingInFragment();
-                }
-            }
-        });
-    }
-
-    private AsyncSearch getRelatedVideos() {
-        String searchOrder = "relevance";
-        String type = "video";
-        String fields = "items(id/videoId,snippet(title,thumbnails/medium/url)),nextPageToken";
-
-        return new AsyncSearch(VideoActivity.this,
-                getTagsByTitle(), searchOrder, type, fields, nextPageToken, new TaskCompleted() {
-            @Override
-            public void onTaskComplete(YouTubeResult result) {
-                if (!result.isCanceled() && result.getVideos() != null) {
-                    nextPageToken = result.getNextPageToken();
-                    for (VideoItem item : result.getVideos()) {
-                        if (!item.getId().equals(videoID)) {
-                            items.add(item);
-                        }
-                    }
-
-                    postRelatedVideosInFragment();
-                }
-            }
-        });
-    }
-
-    private AsyncGetCommentThreads getCommentThreads() {
-        return new AsyncGetCommentThreads(VideoActivity.this,
-                "relevance", videoID, nextPageTokenCommentThread, new TaskCompleted() {
-            @Override
-            public void onTaskComplete(YouTubeResult result) {
-                if (!result.isCanceled()) {
-                    nextPageTokenCommentThread = result.getNextPageToken();
-                    comments.addAll(result.getCommentThread());
-                    postCommentsInFragment();
-                }
-            }
-        });
-    }
-
     private int getItemPosition() {
         return items.size() - videoPosition - 1;
-    }
-
-    private void postDescriptionInFragment() {
-        VideoFragmentDescription fragmentDescription =
-                (VideoFragmentDescription) mSectionsPagerAdapter.instantiateItem(mViewPager, 0);
-        fragmentDescription.updateFragment(videoItem);
-    }
-
-    private void postRatingInFragment() {
-        VideoFragmentDescription fragmentDescription =
-                (VideoFragmentDescription) mSectionsPagerAdapter.instantiateItem(mViewPager, 0);
-        fragmentDescription.updateRadioGroup(videoRating);
-    }
-
-    private void postRelatedVideosInFragment() {
-        VideoFragmentVideos fragmentVideos =
-                (VideoFragmentVideos) mSectionsPagerAdapter.instantiateItem(mViewPager, 1);
-        fragmentVideos.updateVideoList(items, nextPageToken);
-    }
-
-    private void postCommentsInFragment() {
-        VideoFragmentComments fragmentComments =
-                (VideoFragmentComments) mSectionsPagerAdapter.instantiateItem(mViewPager, 2);
-        fragmentComments.updateComments(comments);
     }
 
     @Override
@@ -286,8 +160,15 @@ public class VideoActivity extends AppCompatActivity
 
     public class TabsAdapter extends FragmentPagerAdapter {
 
+        VideoFragmentDescription fragmentDescription;
+        VideoFragmentVideos fragmentVideos;
+        VideoFragmentComments fragmentComments;
+
         TabsAdapter(FragmentManager fm) {
             super(fm);
+            fragmentDescription = new VideoFragmentDescription(videoID, videoTitle);
+            fragmentVideos = new VideoFragmentVideos(items, playlistID, videoID, getTagsByTitle());
+            fragmentComments = new VideoFragmentComments(videoID);
         }
 
         @Override
@@ -295,15 +176,15 @@ public class VideoActivity extends AppCompatActivity
             Fragment fragment = null;
             switch (position) {
                 case 0: {
-                    fragment = VideoFragmentDescription.newInstance(videoID, videoTitle);
+                    fragment = fragmentDescription;
                 }
                 break;
                 case 1: {
-                    fragment = VideoFragmentVideos.newInstance(items, playlistID, videoID, getTagsByTitle());
+                    fragment = fragmentVideos;
                 }
                 break;
                 case 2: {
-                    fragment = VideoFragmentComments.newInstance(comments);
+                    fragment = fragmentComments;
                 }
                 break;
             }

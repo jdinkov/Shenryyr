@@ -1,39 +1,42 @@
 package com.wordpress.dnvsoft.android.shenryyr;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.wordpress.dnvsoft.android.shenryyr.adapters.CommentThreadAdapter;
+import com.wordpress.dnvsoft.android.shenryyr.async_tasks.AsyncGetCommentThreads;
+import com.wordpress.dnvsoft.android.shenryyr.async_tasks.TaskCompleted;
 import com.wordpress.dnvsoft.android.shenryyr.models.YouTubeCommentThread;
-import com.wordpress.dnvsoft.android.shenryyr.models.YouTubeCommentThreadWrapper;
+import com.wordpress.dnvsoft.android.shenryyr.models.YouTubeResult;
+import com.wordpress.dnvsoft.android.shenryyr.network.Network;
 
 import java.util.ArrayList;
 
 public class VideoFragmentComments extends Fragment {
 
+    private String videoID;
+    private String nextPageTokenCommentThread;
     private CommentThreadAdapter adapter;
-    private static String COMMENT_THREAD = "comment_thread";
     private ArrayList<YouTubeCommentThread> commentThreads = new ArrayList<>();
 
-    public VideoFragmentComments() {
+    public VideoFragmentComments(String id) {
+        videoID = id;
     }
 
-    public static VideoFragmentComments newInstance(ArrayList<YouTubeCommentThread> comments) {
-        VideoFragmentComments fragment = new VideoFragmentComments();
-        Bundle bundle = new Bundle();
-        bundle.putSerializable(COMMENT_THREAD, new YouTubeCommentThreadWrapper(comments));
-        fragment.setArguments(bundle);
-        return fragment;
-    }
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-    public void updateComments(ArrayList<YouTubeCommentThread> comments) {
-        commentThreads.addAll(comments);
-        if (adapter != null) {
-            adapter.notifyDataSetChanged();
+        if (Network.IsDeviceOnline(getActivity())) {
+            getCommentThreads().execute();
+        } else {
+            Toast.makeText(getActivity(), R.string.no_network, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -46,14 +49,22 @@ public class VideoFragmentComments extends Fragment {
         adapter = new CommentThreadAdapter(getActivity(), R.layout.list_view_comments, commentThreads);
         listViewComments.setAdapter(adapter);
 
-        if (commentThreads.size() == 0) {
-            YouTubeCommentThreadWrapper wrapper =
-                    (YouTubeCommentThreadWrapper) getArguments().getSerializable(COMMENT_THREAD);
-            commentThreads.addAll(wrapper.getCommentThreads());
-        }
-
         adapter.notifyDataSetChanged();
 
         return fragment;
+    }
+
+    private AsyncGetCommentThreads getCommentThreads() {
+        return new AsyncGetCommentThreads(getActivity(), "relevance", videoID, nextPageTokenCommentThread,
+                new TaskCompleted() {
+                    @Override
+                    public void onTaskComplete(YouTubeResult result) {
+                        if (!result.isCanceled()) {
+                            nextPageTokenCommentThread = result.getNextPageToken();
+                            commentThreads.addAll(result.getCommentThread());
+                            adapter.notifyDataSetChanged();
+                        }
+                    }
+                });
     }
 }

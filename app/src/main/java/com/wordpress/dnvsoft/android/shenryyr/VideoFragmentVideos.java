@@ -34,31 +34,20 @@ public class VideoFragmentVideos extends Fragment {
     private String videoID;
     private ArrayList<VideoItem> videoItems = new ArrayList<>();
 
-    public VideoFragmentVideos() {
+    public VideoFragmentVideos(ArrayList<VideoItem> items, String playlistId, String videoID, String videoTags) {
+        this.videoItems = items;
+        this.playlistId = playlistId;
+        this.videoID = videoID;
+        this.videoTags = videoTags;
     }
 
-    public static VideoFragmentVideos newInstance(
-            ArrayList<VideoItem> items, String playlistId, String videoID, String videoTags) {
-        VideoFragmentVideos fragment = new VideoFragmentVideos();
-        Bundle bundle = new Bundle();
-        bundle.putString("PLAYLIST_ID", playlistId);
-        bundle.putString("VIDEO_ID", videoID);
-        bundle.putString("VIDEO_TAGS", videoTags);
-        bundle.putSerializable("VIDEO_ITEMS", new VideoItemWrapper(items));
-        fragment.setArguments(bundle);
-        return fragment;
-    }
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-    public void updateVideoList(ArrayList<VideoItem> videoItem, String pageToken) {
-        if (videoItem.isEmpty()) {
-            buttonLoadMore.setText(R.string.refresh);
-        } else {
-            buttonLoadMore.setText(R.string.load_more);
-            videoItems.addAll(videoItem);
+        if (playlistId == null) {
+            getVideosFromYouTube();
         }
-        nextPageToken = pageToken;
-        adapter.notifyDataSetChanged();
-        footer.setVisibility(View.VISIBLE);
     }
 
     @Nullable
@@ -85,13 +74,6 @@ public class VideoFragmentVideos extends Fragment {
                 R.id.listViewTitlePlayListItems, R.id.listViewThumbnailPlayListItems, videoItems);
         listView.setAdapter(adapter);
 
-        VideoItemWrapper videoItemWrapper = (VideoItemWrapper) getArguments().getSerializable("VIDEO_ITEMS");
-        videoItems.addAll(videoItemWrapper.getItems());
-
-        playlistId = getArguments().getString("PLAYLIST_ID");
-        videoTags = getArguments().getString("VIDEO_TAGS");
-        videoID = getArguments().getString("VIDEO_ID");
-
         if (playlistId != null) {
             footer.setVisibility(View.GONE);
         }
@@ -104,13 +86,13 @@ public class VideoFragmentVideos extends Fragment {
     View.OnClickListener buttonLoadMoreOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            footer.setVisibility(View.GONE);
             getVideosFromYouTube();
         }
     };
 
     private void getVideosFromYouTube() {
         if (Network.IsDeviceOnline(getActivity())) {
-            footer.setVisibility(View.GONE);
 
             String searchOrder = "relevance";
             String type = "video";

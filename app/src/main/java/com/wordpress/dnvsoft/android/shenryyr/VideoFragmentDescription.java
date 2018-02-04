@@ -7,19 +7,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.wordpress.dnvsoft.android.shenryyr.async_tasks.AsyncGetRating;
+import com.wordpress.dnvsoft.android.shenryyr.async_tasks.AsyncGetVideoDescription;
 import com.wordpress.dnvsoft.android.shenryyr.async_tasks.AsyncVideosRate;
 import com.wordpress.dnvsoft.android.shenryyr.async_tasks.TaskCompleted;
-import com.wordpress.dnvsoft.android.shenryyr.models.VideoItem;
 import com.wordpress.dnvsoft.android.shenryyr.models.YouTubeResult;
 import com.wordpress.dnvsoft.android.shenryyr.network.Network;
 
 public class VideoFragmentDescription extends Fragment {
 
     private String videoID;
+    private String videoTitle;
     private String videoViewCount;
     private String publishedAt;
     private String description;
@@ -33,42 +36,21 @@ public class VideoFragmentDescription extends Fragment {
     private TextView textViewDislikeCount;
     private RadioButton radioButtonLike;
     private RadioButton radioButtonDislike;
+    private RadioGroup radioGroup;
     private final String RATING_NONE = "none";
     private final String RATING_LIKE = "like";
     private final String RATING_DISLIKE = "dislike";
 
-    public VideoFragmentDescription() {
-    }
-
-    public static VideoFragmentDescription newInstance(String id, String title) {
-        VideoFragmentDescription fragment = new VideoFragmentDescription();
-        Bundle bundle = new Bundle();
-        bundle.putString("VIDEO_ID", id);
-        bundle.putString("VIDEO_TITLE", title);
-        fragment.setArguments(bundle);
-        return fragment;
-    }
-
-    public void updateFragment(VideoItem item) {
-        videoViewCount = item.getViewCount();
-        publishedAt = item.getPublishedAt();
-        description = item.getDescription();
-        likeCount = item.getLikeCount();
-        dislikeCount = item.getDislikeCount();
-        populateViews();
-    }
-
-    public void updateRadioGroup(String rating) {
-        videoRating = rating;
-        checkRadioGroup(videoRating);
+    public VideoFragmentDescription(String id, String title) {
+        this.videoID = id;
+        this.videoTitle = title;
     }
 
     private void checkRadioGroup(String rating) {
         if (rating != null) {
             switch (rating) {
                 case RATING_NONE: {
-                    radioButtonLike.setChecked(false);
-                    radioButtonDislike.setChecked(false);
+                    radioGroup.clearCheck();
                 }
                 break;
                 case RATING_LIKE: {
@@ -98,15 +80,27 @@ public class VideoFragmentDescription extends Fragment {
         populateViews();
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (Network.IsDeviceOnline(getActivity())) {
+            getVideoDescription().execute();
+            if (GoogleSignIn.getLastSignedInAccount(getActivity()) != null) {
+                getVideoRating().execute();
+            }
+        } else {
+            Toast.makeText(getActivity(), R.string.no_network, Toast.LENGTH_LONG).show();
+        }
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View fragment = inflater.inflate(R.layout.fragment_video_description, container, false);
 
-        videoID = getArguments().getString("VIDEO_ID");
-
         TextView textViewVideoTitle = (TextView) fragment.findViewById(R.id.textViewDescTitle);
-        textViewVideoTitle.setText(getArguments().getString("VIDEO_TITLE"));
+        textViewVideoTitle.setText(videoTitle);
 
         textViewVideoViewCount = (TextView) fragment.findViewById(R.id.textViewDescViewCount);
         textViewPublishedAt = (TextView) fragment.findViewById(R.id.textViewDescPublishedAt);
@@ -115,6 +109,7 @@ public class VideoFragmentDescription extends Fragment {
         textViewDislikeCount = (TextView) fragment.findViewById(R.id.dislikeCount);
         radioButtonLike = (RadioButton) fragment.findViewById(R.id.radioButtonLike);
         radioButtonDislike = (RadioButton) fragment.findViewById(R.id.radioButtonDislike);
+        radioGroup = (RadioGroup) fragment.findViewById(R.id.radioGroupLikedVideos);
         radioButtonLike.setOnClickListener(onClickListener);
         radioButtonDislike.setOnClickListener(onClickListener);
 
@@ -146,19 +141,19 @@ public class VideoFragmentDescription extends Fragment {
                         break;
                     }
 
-                    AsyncVideosRate videosRate = new AsyncVideosRate(getActivity(),
-                            videoID, videoRating, new TaskCompleted() {
-                        @Override
-                        public void onTaskComplete(YouTubeResult result) {
-                            if (result.isCanceled()) {
-                                videoRating = tempRating;
-                            } else {
-                                ratingChangedToast(videoRating);
-                            }
+                    AsyncVideosRate videosRate = new AsyncVideosRate(getActivity(), videoID, videoRating,
+                            new TaskCompleted() {
+                                @Override
+                                public void onTaskComplete(YouTubeResult result) {
+                                    if (result.isCanceled()) {
+                                        videoRating = tempRating;
+                                    } else {
+                                        ratingChangedToast(videoRating);
+                                    }
 
-                            checkRadioGroup(videoRating);
-                        }
-                    });
+                                    checkRadioGroup(videoRating);
+                                }
+                            });
 
                     videosRate.execute();
                 } else {
@@ -170,6 +165,37 @@ public class VideoFragmentDescription extends Fragment {
             checkRadioGroup(videoRating);
         }
     };
+
+    private AsyncGetVideoDescription getVideoDescription() {
+        return new AsyncGetVideoDescription(getActivity(), videoID,
+                new TaskCompleted() {
+                    @Override
+                    public void onTaskComplete(YouTubeResult result) {
+                        if (!result.isCanceled() && result.getVideos() != null) {
+                            publishedAt = "Published on " + result.getVideos().get(0).getPublishedAt();
+                            description = result.getVideos().get(0).getDescription();
+                            likeCount = result.getVideos().get(0).getLikeCount();
+                            dislikeCount = result.getVideos().get(0).getDislikeCount();
+                            videoViewCount = result.getVideos().get(0).getViewCount() + " views";
+                            //videoItem.setCommentCount(result.getVideos().get(0).getCommentCount());
+                            populateViews();
+                        }
+                    }
+                });
+    }
+
+    private AsyncGetRating getVideoRating() {
+        return new AsyncGetRating(getActivity(), videoID,
+                new TaskCompleted() {
+                    @Override
+                    public void onTaskComplete(YouTubeResult result) {
+                        if (!result.isCanceled()) {
+                            videoRating = result.getVideos().get(0).getRating();
+                            checkRadioGroup(videoRating);
+                        }
+                    }
+                });
+    }
 
     private void ratingChangedToast(String rating) {
         String toastText = null;
