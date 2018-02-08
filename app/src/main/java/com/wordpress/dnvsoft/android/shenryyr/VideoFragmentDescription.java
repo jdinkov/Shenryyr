@@ -41,9 +41,16 @@ public class VideoFragmentDescription extends Fragment {
     private final String RATING_LIKE = "like";
     private final String RATING_DISLIKE = "dislike";
 
-    public VideoFragmentDescription(String id, String title) {
-        this.videoID = id;
-        this.videoTitle = title;
+    public VideoFragmentDescription() {
+    }
+
+    public static VideoFragmentDescription newInstance(String id, String title) {
+        VideoFragmentDescription videoFragmentDescription = new VideoFragmentDescription();
+        Bundle bundle = new Bundle();
+        bundle.putString("VIDEO_ID", id);
+        bundle.putString("VIDEO_TITLE", title);
+        videoFragmentDescription.setArguments(bundle);
+        return videoFragmentDescription;
     }
 
     private void checkRadioGroup(String rating) {
@@ -83,6 +90,9 @@ public class VideoFragmentDescription extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        videoID = getArguments().getString("VIDEO_ID");
+        videoTitle = getArguments().getString("VIDEO_TITLE");
 
         if (Network.IsDeviceOnline(getActivity())) {
             getVideoDescription().execute();

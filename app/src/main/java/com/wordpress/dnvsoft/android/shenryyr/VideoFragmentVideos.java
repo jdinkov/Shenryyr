@@ -34,16 +34,30 @@ public class VideoFragmentVideos extends Fragment {
     private String videoID;
     private ArrayList<VideoItem> videoItems = new ArrayList<>();
 
-    public VideoFragmentVideos(ArrayList<VideoItem> items, String playlistId, String videoID, String videoTags) {
-        this.videoItems = items;
-        this.playlistId = playlistId;
-        this.videoID = videoID;
-        this.videoTags = videoTags;
+    public VideoFragmentVideos() {
+    }
+
+    public static VideoFragmentVideos newInstance(
+            ArrayList<VideoItem> items, String playlistId, String videoID, String videoTags) {
+        VideoFragmentVideos videoFragmentVideos = new VideoFragmentVideos();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("ITEMS", new VideoItemWrapper(items));
+        bundle.putString("PLAYLIST_ID", playlistId);
+        bundle.putString("VIDEO_ID", videoID);
+        bundle.putString("VIDEO_TAGS", videoTags);
+        videoFragmentVideos.setArguments(bundle);
+        return videoFragmentVideos;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        VideoItemWrapper wrapper = (VideoItemWrapper) getArguments().getSerializable("ITEMS");
+        videoItems.addAll(wrapper.getItems());
+        playlistId = getArguments().getString("PLAYLIST_ID");
+        videoID = getArguments().getString("VIDEO_ID");
+        videoTags = getArguments().getString("VIDEO_TAGS");
 
         if (playlistId == null) {
             getVideosFromYouTube();

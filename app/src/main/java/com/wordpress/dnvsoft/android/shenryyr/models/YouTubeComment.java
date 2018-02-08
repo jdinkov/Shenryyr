@@ -6,7 +6,6 @@ public class YouTubeComment {
     private String authorDisplayName;
     private String authorImageUrl;
     private String commentText;
-    private boolean canRate;
     private String viewerRating;
     private String likeCount;
 
@@ -40,14 +39,6 @@ public class YouTubeComment {
 
     public void setCommentText(String commentText) {
         this.commentText = commentText;
-    }
-
-    public boolean getCanRate() {
-        return canRate;
-    }
-
-    public void setCanRate(boolean canRate) {
-        this.canRate = canRate;
     }
 
     public String getViewerRating() {

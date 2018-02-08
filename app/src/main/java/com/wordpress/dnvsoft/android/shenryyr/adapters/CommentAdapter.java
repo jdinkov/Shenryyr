@@ -22,7 +22,7 @@ public class CommentAdapter extends ArrayAdapter {
     protected int layout;
     ArrayList objects;
 
-    CommentAdapter(@NonNull Context context, int layout, ArrayList objects) {
+    public CommentAdapter(@NonNull Context context, int layout, ArrayList objects) {
         super(context, layout, objects);
         this.context = context;
         this.layout = layout;
@@ -54,7 +54,7 @@ public class CommentAdapter extends ArrayAdapter {
                 imageViewLike.setImageDrawable(convertView.getResources().getDrawable(R.drawable.liked_video));
             }
             break;
-            case "": {
+            case "dislike": {
                 imageViewDislike.setImageDrawable(convertView.getResources().getDrawable(R.drawable.disliked_video));
             }
             break;

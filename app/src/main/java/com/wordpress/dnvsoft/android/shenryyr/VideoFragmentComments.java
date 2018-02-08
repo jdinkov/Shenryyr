@@ -29,13 +29,22 @@ public class VideoFragmentComments extends Fragment {
     private LinearLayout footer;
     private Button buttonLoadMore;
 
-    public VideoFragmentComments(String id) {
-        videoID = id;
+    public VideoFragmentComments() {
+    }
+
+    public static VideoFragmentComments newInstance(String id) {
+        VideoFragmentComments videoFragmentComments = new VideoFragmentComments();
+        Bundle bundle = new Bundle();
+        bundle.putString("VIDEO_ID", id);
+        videoFragmentComments.setArguments(bundle);
+        return videoFragmentComments;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        videoID = getArguments().getString("VIDEO_ID");
 
         getCommentThreads();
     }

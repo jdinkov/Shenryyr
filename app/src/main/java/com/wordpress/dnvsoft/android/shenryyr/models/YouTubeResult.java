@@ -8,6 +8,7 @@ public class YouTubeResult {
     private String nextPageToken;
     private ArrayList<VideoItem> videos;
     private ArrayList<YouTubeCommentThread> commentThread;
+    private ArrayList<YouTubeComment> commentReplies;
 
     public boolean isCanceled() {
         return isCanceled;
@@ -39,5 +40,13 @@ public class YouTubeResult {
 
     public void setCommentThread(ArrayList<YouTubeCommentThread> comments) {
         this.commentThread = comments;
+    }
+
+    public ArrayList<YouTubeComment> getCommentReplies() {
+        return commentReplies;
+    }
+
+    public void setCommentReplies(ArrayList<YouTubeComment> commentReplies) {
+        this.commentReplies = commentReplies;
     }
 }

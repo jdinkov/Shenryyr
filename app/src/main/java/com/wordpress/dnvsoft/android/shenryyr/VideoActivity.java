@@ -160,15 +160,15 @@ public class VideoActivity extends AppCompatActivity
 
     public class TabsAdapter extends FragmentPagerAdapter {
 
-        VideoFragmentDescription fragmentDescription;
-        VideoFragmentVideos fragmentVideos;
-        VideoFragmentComments fragmentComments;
+        private VideoFragmentDescription fragmentDescription;
+        private VideoFragmentVideos fragmentVideos;
+        private VideoFragmentRootComments fragmentRootComments;
 
         TabsAdapter(FragmentManager fm) {
             super(fm);
-            fragmentDescription = new VideoFragmentDescription(videoID, videoTitle);
-            fragmentVideos = new VideoFragmentVideos(items, playlistID, videoID, getTagsByTitle());
-            fragmentComments = new VideoFragmentComments(videoID);
+            fragmentDescription = VideoFragmentDescription.newInstance(videoID, videoTitle);
+            fragmentVideos = VideoFragmentVideos.newInstance(items, playlistID, videoID, getTagsByTitle());
+            fragmentRootComments = VideoFragmentRootComments.newInstance(videoID);
         }
 
         @Override
@@ -184,7 +184,7 @@ public class VideoActivity extends AppCompatActivity
                 }
                 break;
                 case 2: {
-                    fragment = fragmentComments;
+                    fragment = fragmentRootComments;
                 }
                 break;
             }

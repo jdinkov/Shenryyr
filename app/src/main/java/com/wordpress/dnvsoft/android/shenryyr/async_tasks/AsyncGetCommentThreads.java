@@ -33,7 +33,7 @@ public class AsyncGetCommentThreads extends AsyncYoutube {
         commentThreadList.setVideoId(videoID);
         commentThreadList.setPageToken(pageToken);
         commentThreadList.setOrder(order);
-        commentThreadList.setFields("nextPageToken,items(snippet(canReply,totalReplyCount,isPublic,topLevelComment(id,snippet(authorDisplayName,authorProfileImageUrl,textOriginal,canRate,viewerRating,likeCount))))");
+        commentThreadList.setFields("nextPageToken,items(snippet(canReply,totalReplyCount,isPublic,topLevelComment(id,snippet(authorDisplayName,authorProfileImageUrl,textOriginal,viewerRating,likeCount))))");
         commentThreadList.setMaxResults((long) 20);
         if (accountEmail == null) {
             commentThreadList.setKey(YoutubeInfo.DEVELOPER_KEY);
@@ -53,7 +53,6 @@ public class AsyncGetCommentThreads extends AsyncYoutube {
                 commentThread.setAuthorDisplayName(response.getItems().get(i).getSnippet().getTopLevelComment().getSnippet().getAuthorDisplayName());
                 commentThread.setAuthorImageUrl(response.getItems().get(i).getSnippet().getTopLevelComment().getSnippet().getAuthorProfileImageUrl());
                 commentThread.setCommentText(response.getItems().get(i).getSnippet().getTopLevelComment().getSnippet().getTextOriginal());
-                commentThread.setCanRate(response.getItems().get(i).getSnippet().getTopLevelComment().getSnippet().getCanRate());
                 commentThread.setViewerRating(response.getItems().get(i).getSnippet().getTopLevelComment().getSnippet().getViewerRating());
                 commentThread.setLikeCount(response.getItems().get(i).getSnippet().getTopLevelComment().getSnippet().getLikeCount().toString());
 
