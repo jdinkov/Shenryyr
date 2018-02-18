@@ -10,13 +10,15 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.squareup.picasso.Picasso;
 import com.wordpress.dnvsoft.android.shenryyr.adapters.CommentAdapter;
 import com.wordpress.dnvsoft.android.shenryyr.async_tasks.AsyncGetComments;
 import com.wordpress.dnvsoft.android.shenryyr.async_tasks.TaskCompleted;
+import com.wordpress.dnvsoft.android.shenryyr.menus.InsertCommentReplyMenu;
 import com.wordpress.dnvsoft.android.shenryyr.models.YouTubeComment;
 import com.wordpress.dnvsoft.android.shenryyr.models.YouTubeResult;
 import com.wordpress.dnvsoft.android.shenryyr.network.Network;
@@ -62,19 +64,29 @@ public class VideoFragmentCommentReplies extends Fragment {
     }
 
     @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if (youTubeComments.size() != 0 && youTubeComments.size() % 20 == 0) {
+            footer.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_comment_replies, container, false);
 
         ListView listView = (ListView) view.findViewById(R.id.listViewCommentReplies);
 
-        RelativeLayout header = (RelativeLayout) inflater.inflate(R.layout.list_view_comments, listView, false);
-        imageViewProfilePic = (ImageView) header.findViewById(R.id.imageViewProfilePic);
-        textViewProfileName = (TextView) header.findViewById(R.id.textViewProfileName);
-        textViewCommentText = (TextView) header.findViewById(R.id.textViewCommentText);
-        imageViewLike = (ImageView) header.findViewById(R.id.imageViewLike);
-        textViewLikeCount = (TextView) header.findViewById(R.id.textViewLikeCount);
-        imageViewDislike = (ImageView) header.findViewById(R.id.imageViewDislike);
-        listView.addHeaderView(header, null, false);
+        imageViewProfilePic = (ImageView) view.findViewById(R.id.imageViewProfilePic);
+        textViewProfileName = (TextView) view.findViewById(R.id.textViewProfileName);
+        textViewCommentText = (TextView) view.findViewById(R.id.textViewCommentText);
+        imageViewLike = (ImageView) view.findViewById(R.id.imageViewLike);
+        textViewLikeCount = (TextView) view.findViewById(R.id.textViewLikeCount);
+        imageViewDislike = (ImageView) view.findViewById(R.id.imageViewDislike);
+        Button buttonExit = (Button) view.findViewById(R.id.buttonExit);
+        Button buttonAddReply = (Button) view.findViewById(R.id.buttonAddReply);
+        buttonExit.setOnClickListener(onClickListener);
+        buttonAddReply.setOnClickListener(onClickListener);
 
         footer = (LinearLayout) inflater.inflate(R.layout.footer_main, listView, false);
         buttonLoadMore = (Button) footer.findViewById(R.id.buttonFooterMain);
@@ -99,8 +111,26 @@ public class VideoFragmentCommentReplies extends Fragment {
     private View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            if (Network.IsDeviceOnline(getActivity())) {
-                getYouTubeCommentReplies().execute();
+            switch (v.getId()) {
+                case R.id.buttonFooterMain: {
+                    if (Network.IsDeviceOnline(getActivity())) {
+                        getYouTubeCommentReplies().execute();
+                    }
+                }
+                break;
+                case R.id.buttonExit: {
+                    getActivity().getSupportFragmentManager().popBackStack();
+                }
+                break;
+                case R.id.buttonAddReply: {
+                    if (GoogleSignIn.getLastSignedInAccount(getActivity()) != null) {
+                        InsertCommentReplyMenu commentReplyMenu = new InsertCommentReplyMenu(getActivity(), commentId);
+                        commentReplyMenu.ShowDialog();
+                    } else {
+                        Toast.makeText(getActivity(), R.string.unauthorized, Toast.LENGTH_LONG).show();
+                    }
+                }
+                break;
             }
         }
     };

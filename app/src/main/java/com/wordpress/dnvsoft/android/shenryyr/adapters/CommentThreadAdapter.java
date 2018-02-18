@@ -18,11 +18,8 @@ import java.util.ArrayList;
 
 public class CommentThreadAdapter extends CommentAdapter {
 
-    private Context context;
-
     public CommentThreadAdapter(@NonNull Context context, int layout, ArrayList objects) {
         super(context, layout, objects);
-        this.context = context;
     }
 
     @NonNull

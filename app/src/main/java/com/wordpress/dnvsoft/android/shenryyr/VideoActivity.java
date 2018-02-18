@@ -144,13 +144,13 @@ public class VideoActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onStop() {
+    protected void onPause() {
         if (youTubePlayer != null) {
             currentVideoTime = youTubePlayer.getCurrentTimeMillis();
             youTubePlayer.release();
             isMinimized = true;
         }
-        super.onStop();
+        super.onPause();
     }
 
     private String getTagsByTitle() {

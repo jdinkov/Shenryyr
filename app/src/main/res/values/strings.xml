@@ -59,4 +59,6 @@
     <string name="disliked_video">You disliked this video</string>
     <string name="profile_picture">Profile Picture</string>
     <string name="image_profile_pic">profile pic image</string>
+    <string name="exit_button">X</string>
+    <string name="add_a_reply">Add a reply</string>
 </resources>

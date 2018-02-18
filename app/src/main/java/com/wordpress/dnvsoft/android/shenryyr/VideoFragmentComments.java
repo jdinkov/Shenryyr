@@ -46,7 +46,17 @@ public class VideoFragmentComments extends Fragment {
 
         videoID = getArguments().getString("VIDEO_ID");
 
-        getCommentThreads();
+        if (commentThreads.size() == 0) {
+            getCommentThreads();
+        }
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if (commentThreads.size() != 0 && commentThreads.size() % 20 == 0) {
+            footer.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
