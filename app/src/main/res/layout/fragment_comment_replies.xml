@@ -21,18 +21,11 @@
         android:textSize="18sp"
         android:textStyle="bold" />
 
-    <include
-        android:id="@+id/commentThread"
-        layout="@layout/list_view_comments"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/buttonExit" />
-
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_below="@+id/commentThread"
+        android:layout_below="@+id/buttonAddReply"
         android:layout_marginEnd="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
@@ -45,8 +38,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/imageView"
-        android:layout_marginLeft="40dp"
-        android:layout_marginStart="40dp"
         android:divider="@null"
         android:listSelector="@android:color/transparent" />
 

@@ -19,7 +19,7 @@ import java.util.ArrayList;
 public class CommentThreadAdapter extends CommentAdapter {
 
     public CommentThreadAdapter(@NonNull Context context, int layout, ArrayList objects) {
-        super(context, layout, objects);
+        super(context, layout, objects, false);
     }
 
     @NonNull

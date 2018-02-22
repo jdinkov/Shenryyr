@@ -21,12 +21,14 @@ public class CommentAdapter extends ArrayAdapter {
     protected Context context;
     protected int layout;
     ArrayList objects;
+    private boolean isPaddingSet;
 
-    public CommentAdapter(@NonNull Context context, int layout, ArrayList objects) {
+    public CommentAdapter(@NonNull Context context, int layout, ArrayList objects, boolean isPaddingSet) {
         super(context, layout, objects);
         this.context = context;
         this.layout = layout;
         this.objects = objects;
+        this.isPaddingSet = isPaddingSet;
     }
 
     @NonNull
@@ -35,6 +37,11 @@ public class CommentAdapter extends ArrayAdapter {
         if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(layout, parent, false);
+        }
+
+        if (isPaddingSet) {
+            float scale = context.getResources().getDisplayMetrics().density;
+            convertView.setPadding((int) scale * 50, 0, 0, 0);
         }
 
         ImageView imageViewProfilePic = (ImageView) convertView.findViewById(R.id.imageViewProfilePic);

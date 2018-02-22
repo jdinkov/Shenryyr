@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -77,12 +78,15 @@ public class VideoFragmentCommentReplies extends Fragment {
 
         ListView listView = (ListView) view.findViewById(R.id.listViewCommentReplies);
 
-        imageViewProfilePic = (ImageView) view.findViewById(R.id.imageViewProfilePic);
-        textViewProfileName = (TextView) view.findViewById(R.id.textViewProfileName);
-        textViewCommentText = (TextView) view.findViewById(R.id.textViewCommentText);
-        imageViewLike = (ImageView) view.findViewById(R.id.imageViewLike);
-        textViewLikeCount = (TextView) view.findViewById(R.id.textViewLikeCount);
-        imageViewDislike = (ImageView) view.findViewById(R.id.imageViewDislike);
+        RelativeLayout header = (RelativeLayout) inflater.inflate(R.layout.list_view_comments, listView, false);
+        imageViewProfilePic = (ImageView) header.findViewById(R.id.imageViewProfilePic);
+        textViewProfileName = (TextView) header.findViewById(R.id.textViewProfileName);
+        textViewCommentText = (TextView) header.findViewById(R.id.textViewCommentText);
+        imageViewLike = (ImageView) header.findViewById(R.id.imageViewLike);
+        textViewLikeCount = (TextView) header.findViewById(R.id.textViewLikeCount);
+        imageViewDislike = (ImageView) header.findViewById(R.id.imageViewDislike);
+        listView.addHeaderView(header, null, false);
+
         Button buttonExit = (Button) view.findViewById(R.id.buttonExit);
         Button buttonAddReply = (Button) view.findViewById(R.id.buttonAddReply);
         buttonExit.setOnClickListener(onClickListener);
@@ -100,7 +104,7 @@ public class VideoFragmentCommentReplies extends Fragment {
 
         buttonLoadMore.setOnClickListener(onClickListener);
 
-        adapter = new CommentAdapter(getActivity(), R.layout.list_view_comments, youTubeComments);
+        adapter = new CommentAdapter(getActivity(), R.layout.list_view_comments, youTubeComments, true);
         listView.setAdapter(adapter);
 
         adapter.notifyDataSetChanged();
