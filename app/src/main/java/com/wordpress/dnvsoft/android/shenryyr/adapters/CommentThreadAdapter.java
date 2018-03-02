@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.wordpress.dnvsoft.android.shenryyr.R;
 import com.wordpress.dnvsoft.android.shenryyr.VideoActivity;
 import com.wordpress.dnvsoft.android.shenryyr.VideoFragmentCommentReplies;
+import com.wordpress.dnvsoft.android.shenryyr.menus.CommentOptionMenu;
 import com.wordpress.dnvsoft.android.shenryyr.models.YouTubeCommentThread;
 
 import java.util.ArrayList;
@@ -55,7 +56,7 @@ public class CommentThreadAdapter extends CommentAdapter {
                 FragmentTransaction fragmentTransaction =
                         ((VideoActivity) context).getSupportFragmentManager().beginTransaction();
                 fragmentTransaction.replace(R.id.root_fragment,
-                        VideoFragmentCommentReplies.newInstance(youTubeCommentThread.getID()));
+                        VideoFragmentCommentReplies.newInstance(youTubeCommentThread));
                 fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
@@ -72,5 +73,23 @@ public class CommentThreadAdapter extends CommentAdapter {
         }
 
         return text;
+    }
+
+    @Override
+    protected void SelectOption(int position) {
+        YouTubeCommentThread comment = (YouTubeCommentThread) objects.get(position);
+        Enum<CommentOptionMenu.OptionsToDisplay> option;
+        if (comment.getCanReply()) {
+            option = CommentOptionMenu.OptionsToDisplay.INSERT_REPLY;
+        } else if (comment.getAuthorChannelId().equals(channelId)) {
+            option = CommentOptionMenu.OptionsToDisplay.EDIT;
+        } else if (comment.getCanReply() && comment.getAuthorChannelId().equals(channelId)) {
+            option = CommentOptionMenu.OptionsToDisplay.INSERT_AND_EDIT;
+        } else {
+            option = CommentOptionMenu.OptionsToDisplay.NONE;
+        }
+
+        CommentOptionMenu menu = new CommentOptionMenu(context, comment.getID(), option);
+        menu.ShowDialog();
     }
 }

@@ -3,13 +3,14 @@ package com.wordpress.dnvsoft.android.shenryyr;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -19,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -28,7 +30,11 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.squareup.picasso.Picasso;
+import com.wordpress.dnvsoft.android.shenryyr.async_tasks.AsyncGetChannelId;
+import com.wordpress.dnvsoft.android.shenryyr.async_tasks.TaskCompleted;
 import com.wordpress.dnvsoft.android.shenryyr.menus.MissingServiceMenu;
+import com.wordpress.dnvsoft.android.shenryyr.models.YouTubeResult;
+import com.wordpress.dnvsoft.android.shenryyr.network.Network;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -110,8 +116,12 @@ public class MainActivity extends AppCompatActivity
 
     private void signIn() {
         if (isSignedIn() == null) {
-            Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-            startActivityForResult(signInIntent, RC_SIGN_IN);
+            if (Network.IsDeviceOnline(MainActivity.this)) {
+                Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+                startActivityForResult(signInIntent, RC_SIGN_IN);
+            } else {
+                Toast.makeText(MainActivity.this, R.string.no_network, Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -123,6 +133,11 @@ public class MainActivity extends AppCompatActivity
                         updateSignInUI(null);
                     }
                 });
+
+        SharedPreferences.Editor editor =
+                getSharedPreferences("CHANNEL_ID_PREFERENCES", MODE_PRIVATE).edit();
+        editor.remove("CHANNEL_ID");
+        editor.apply();
     }
 
     @Override
@@ -226,6 +241,7 @@ public class MainActivity extends AppCompatActivity
         if (requestCode == RC_SIGN_IN) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             handleSignInResult(task);
+            getChannelId().execute();
         }
     }
 
@@ -236,5 +252,18 @@ public class MainActivity extends AppCompatActivity
         } catch (ApiException e) {
             updateSignInUI(null);
         }
+    }
+
+    private AsyncGetChannelId getChannelId() {
+        return new AsyncGetChannelId(MainActivity.this,
+                new TaskCompleted() {
+                    @Override
+                    public void onTaskComplete(YouTubeResult result) {
+                        SharedPreferences.Editor editor =
+                                getSharedPreferences("CHANNEL_ID_PREFERENCES", MODE_PRIVATE).edit();
+                        editor.putString("CHANNEL_ID", result.getChannelId());
+                        editor.apply();
+                    }
+                });
     }
 }

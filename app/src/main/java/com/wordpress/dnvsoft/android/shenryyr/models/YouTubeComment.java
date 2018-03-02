@@ -8,6 +8,7 @@ public class YouTubeComment {
     private String commentText;
     private String viewerRating;
     private String likeCount;
+    private String authorChannelId;
 
     public String getID() {
         return ID;
@@ -55,5 +56,13 @@ public class YouTubeComment {
 
     public void setLikeCount(String likeCount) {
         this.likeCount = likeCount;
+    }
+
+    public String getAuthorChannelId() {
+        return authorChannelId;
+    }
+
+    public void setAuthorChannelId(String authorChannelId) {
+        this.authorChannelId = authorChannelId;
     }
 }

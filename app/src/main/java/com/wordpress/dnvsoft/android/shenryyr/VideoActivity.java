@@ -21,7 +21,8 @@ import com.wordpress.dnvsoft.android.shenryyr.models.VideoItemWrapper;
 import java.util.ArrayList;
 
 public class VideoActivity extends AppCompatActivity
-        implements YouTubePlayer.OnInitializedListener {
+        implements YouTubePlayer.OnInitializedListener,
+        VideoFragmentDescription.OnVideoDescriptionResponse, VideoFragmentComments.OnCommentCountUpdate {
 
     private String videoID;
     private boolean isMinimized;
@@ -32,6 +33,7 @@ public class VideoActivity extends AppCompatActivity
     private YouTubePlayerFragment youTubePlayerFragment;
     private String videoTitle;
     private int currentVideoTime;
+    private String commentCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -156,6 +158,16 @@ public class VideoActivity extends AppCompatActivity
     private String getTagsByTitle() {
         String[] tempArray = videoTitle.split("\\W+");
         return TextUtils.join("|", tempArray);
+    }
+
+    @Override
+    public void setCommentCount(String commentCount) {
+        this.commentCount = commentCount;
+    }
+
+    @Override
+    public String getCommentCount() {
+        return commentCount;
     }
 
     public class TabsAdapter extends FragmentPagerAdapter {

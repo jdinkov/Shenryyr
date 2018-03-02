@@ -4,11 +4,20 @@ import java.util.ArrayList;
 
 public class YouTubeResult {
 
+    private String channelId;
     private boolean isCanceled;
     private String nextPageToken;
     private ArrayList<VideoItem> videos;
     private ArrayList<YouTubeCommentThread> commentThread;
     private ArrayList<YouTubeComment> commentReplies;
+
+    public String getChannelId() {
+        return channelId;
+    }
+
+    public void setChannelId(String channelId) {
+        this.channelId = channelId;
+    }
 
     public boolean isCanceled() {
         return isCanceled;

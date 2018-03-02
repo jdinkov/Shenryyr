@@ -1,5 +1,6 @@
 package com.wordpress.dnvsoft.android.shenryyr;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -40,6 +41,11 @@ public class VideoFragmentDescription extends Fragment {
     private final String RATING_NONE = "none";
     private final String RATING_LIKE = "like";
     private final String RATING_DISLIKE = "dislike";
+    private OnVideoDescriptionResponse callback;
+
+    interface OnVideoDescriptionResponse {
+        void setCommentCount(String commentCount);
+    }
 
     public VideoFragmentDescription() {
     }
@@ -54,7 +60,7 @@ public class VideoFragmentDescription extends Fragment {
     }
 
     private void checkRadioGroup(String rating) {
-        if (rating != null) {
+        if (getView() != null && rating != null) {
             switch (rating) {
                 case RATING_NONE: {
                     radioGroup.clearCheck();
@@ -73,18 +79,27 @@ public class VideoFragmentDescription extends Fragment {
     }
 
     private void populateViews() {
-        textViewVideoViewCount.setText(videoViewCount);
-        textViewPublishedAt.setText(publishedAt);
-        textViewDescription.setText(description);
-        textViewLikeCount.setText(likeCount);
-        textViewDislikeCount.setText(dislikeCount);
-        checkRadioGroup(videoRating);
+        if (getView() != null) {
+            textViewVideoViewCount.setText(videoViewCount);
+            textViewPublishedAt.setText(publishedAt);
+            textViewDescription.setText(description);
+            textViewLikeCount.setText(likeCount);
+            textViewDislikeCount.setText(dislikeCount);
+            checkRadioGroup(videoRating);
+        }
     }
 
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
         populateViews();
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        callback = (OnVideoDescriptionResponse) context;
     }
 
     @Override
@@ -122,6 +137,8 @@ public class VideoFragmentDescription extends Fragment {
         radioGroup = (RadioGroup) fragment.findViewById(R.id.radioGroupLikedVideos);
         radioButtonLike.setOnClickListener(onClickListener);
         radioButtonDislike.setOnClickListener(onClickListener);
+
+        populateViews();
 
         return fragment;
     }
@@ -187,7 +204,7 @@ public class VideoFragmentDescription extends Fragment {
                             likeCount = result.getVideos().get(0).getLikeCount();
                             dislikeCount = result.getVideos().get(0).getDislikeCount();
                             videoViewCount = result.getVideos().get(0).getViewCount() + " views";
-                            //videoItem.setCommentCount(result.getVideos().get(0).getCommentCount());
+                            callback.setCommentCount(result.getVideos().get(0).getCommentCount());
                             populateViews();
                         }
                     }

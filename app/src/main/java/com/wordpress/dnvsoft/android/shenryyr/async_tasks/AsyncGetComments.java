@@ -34,7 +34,7 @@ public class AsyncGetComments extends AsyncYoutube {
         commentsList.setPageToken(nextPageToken);
         commentsList.setParentId(parentId);
         commentsList.setMaxResults((long) 20);
-        commentsList.setFields("items(id,snippet(authorDisplayName,authorProfileImageUrl,likeCount,textOriginal,viewerRating)),nextPageToken");
+        commentsList.setFields("items(id,snippet(authorDisplayName,authorProfileImageUrl,authorChannelId,likeCount,textOriginal,viewerRating)),nextPageToken");
         if (accountEmail == null) {
             commentsList.setKey(YoutubeInfo.DEVELOPER_KEY);
         }
@@ -50,6 +50,7 @@ public class AsyncGetComments extends AsyncYoutube {
             comment.setCommentText(response.getItems().get(i).getSnippet().getTextOriginal());
             comment.setViewerRating(response.getItems().get(i).getSnippet().getViewerRating());
             comment.setLikeCount(response.getItems().get(i).getSnippet().getLikeCount().toString());
+            comment.setAuthorChannelId(response.getItems().get(i).getSnippet().getAuthorChannelId().toString());
 
             youTubeComments.add(comment);
         }

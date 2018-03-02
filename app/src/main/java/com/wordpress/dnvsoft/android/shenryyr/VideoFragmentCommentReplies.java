@@ -28,26 +28,31 @@ import java.util.ArrayList;
 
 public class VideoFragmentCommentReplies extends Fragment {
 
-    private String commentId;
     private String nextPageToken;
     private LinearLayout footer;
     private Button buttonLoadMore;
     private CommentAdapter adapter;
-    private ImageView imageViewProfilePic;
-    private TextView textViewProfileName;
-    private TextView textViewCommentText;
-    private ImageView imageViewLike;
-    private TextView textViewLikeCount;
-    private ImageView imageViewDislike;
+    private YouTubeComment youTubeComment = new YouTubeComment();
     private ArrayList<YouTubeComment> youTubeComments = new ArrayList<>();
+    private static final String COMMENT_ID = "COMMENT_ID";
+    private static final String COMMENT_IMAGE_URL = "COMMENT_IMAGE_URL";
+    private static final String COMMENT_DISPLAY_NAME = "COMMENT_DISPLAY_NAME";
+    private static final String COMMENT_TEXT = "COMMENT_TEXT";
+    private static final String COMMENT_LIKE_COUNT = "COMMENT_LIKE_COUNT";
+    private static final String COMMENT_VIEWER_RATING = "COMMENT_VIEWER_RATING";
 
     public VideoFragmentCommentReplies() {
     }
 
-    public static VideoFragmentCommentReplies newInstance(String id) {
+    public static VideoFragmentCommentReplies newInstance(YouTubeComment youTubeComment) {
         VideoFragmentCommentReplies videoFragmentCommentReplies = new VideoFragmentCommentReplies();
         Bundle bundle = new Bundle();
-        bundle.putString("COMMENT_ID", id);
+        bundle.putString(COMMENT_ID, youTubeComment.getID());
+        bundle.putString(COMMENT_IMAGE_URL, youTubeComment.getAuthorImageUrl());
+        bundle.putString(COMMENT_DISPLAY_NAME, youTubeComment.getAuthorDisplayName());
+        bundle.putString(COMMENT_TEXT, youTubeComment.getCommentText());
+        bundle.putString(COMMENT_LIKE_COUNT, youTubeComment.getLikeCount());
+        bundle.putString(COMMENT_VIEWER_RATING, youTubeComment.getViewerRating());
         videoFragmentCommentReplies.setArguments(bundle);
         return videoFragmentCommentReplies;
     }
@@ -56,10 +61,14 @@ public class VideoFragmentCommentReplies extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        commentId = getArguments().getString("COMMENT_ID");
+        youTubeComment.setID(getArguments().getString(COMMENT_ID));
+        youTubeComment.setAuthorImageUrl(getArguments().getString(COMMENT_IMAGE_URL));
+        youTubeComment.setAuthorDisplayName(getArguments().getString(COMMENT_DISPLAY_NAME));
+        youTubeComment.setCommentText(getArguments().getString(COMMENT_TEXT));
+        youTubeComment.setLikeCount(getArguments().getString(COMMENT_LIKE_COUNT));
+        youTubeComment.setViewerRating(getArguments().getString(COMMENT_VIEWER_RATING));
 
         if (Network.IsDeviceOnline(getActivity())) {
-            getYouTubeCommentHeader().execute();
             getYouTubeCommentReplies().execute();
         }
     }
@@ -79,12 +88,30 @@ public class VideoFragmentCommentReplies extends Fragment {
         ListView listView = (ListView) view.findViewById(R.id.listViewCommentReplies);
 
         RelativeLayout header = (RelativeLayout) inflater.inflate(R.layout.list_view_comments, listView, false);
-        imageViewProfilePic = (ImageView) header.findViewById(R.id.imageViewProfilePic);
-        textViewProfileName = (TextView) header.findViewById(R.id.textViewProfileName);
-        textViewCommentText = (TextView) header.findViewById(R.id.textViewCommentText);
-        imageViewLike = (ImageView) header.findViewById(R.id.imageViewLike);
-        textViewLikeCount = (TextView) header.findViewById(R.id.textViewLikeCount);
-        imageViewDislike = (ImageView) header.findViewById(R.id.imageViewDislike);
+        ImageView imageViewProfilePic = (ImageView) header.findViewById(R.id.imageViewProfilePic);
+        TextView textViewProfileName = (TextView) header.findViewById(R.id.textViewProfileName);
+        TextView textViewCommentText = (TextView) header.findViewById(R.id.textViewCommentText);
+        ImageView imageViewLike = (ImageView) header.findViewById(R.id.imageViewLike);
+        TextView textViewLikeCount = (TextView) header.findViewById(R.id.textViewLikeCount);
+        ImageView imageViewDislike = (ImageView) header.findViewById(R.id.imageViewDislike);
+        Button buttonEditComment = (Button) header.findViewById(R.id.buttonEditComment);
+        buttonEditComment.setVisibility(View.GONE);
+
+        Picasso.with(getActivity()).load(youTubeComment.getAuthorImageUrl()).into(imageViewProfilePic);
+        textViewProfileName.setText(youTubeComment.getAuthorDisplayName());
+        textViewCommentText.setText(youTubeComment.getCommentText());
+        textViewLikeCount.setText(youTubeComment.getLikeCount());
+        switch (youTubeComment.getViewerRating()) {
+            case "like": {
+                imageViewLike.setImageDrawable(getResources().getDrawable(R.drawable.liked_video));
+            }
+            break;
+            case "dislike": {
+                imageViewDislike.setImageDrawable(getResources().getDrawable(R.drawable.disliked_video));
+            }
+            break;
+        }
+
         listView.addHeaderView(header, null, false);
 
         Button buttonExit = (Button) view.findViewById(R.id.buttonExit);
@@ -128,7 +155,7 @@ public class VideoFragmentCommentReplies extends Fragment {
                 break;
                 case R.id.buttonAddReply: {
                     if (GoogleSignIn.getLastSignedInAccount(getActivity()) != null) {
-                        InsertCommentReplyMenu commentReplyMenu = new InsertCommentReplyMenu(getActivity(), commentId);
+                        InsertCommentReplyMenu commentReplyMenu = new InsertCommentReplyMenu(getActivity(), youTubeComment.getID());
                         commentReplyMenu.ShowDialog();
                     } else {
                         Toast.makeText(getActivity(), R.string.unauthorized, Toast.LENGTH_LONG).show();
@@ -139,34 +166,8 @@ public class VideoFragmentCommentReplies extends Fragment {
         }
     };
 
-    private AsyncGetComments getYouTubeCommentHeader() {
-        return new AsyncGetComments(getActivity(), commentId, null, null,
-                new TaskCompleted() {
-                    @Override
-                    public void onTaskComplete(YouTubeResult result) {
-                        if (!result.isCanceled()) {
-                            YouTubeComment youTubeComment = result.getCommentReplies().get(0);
-                            Picasso.with(getActivity()).load(youTubeComment.getAuthorImageUrl()).into(imageViewProfilePic);
-                            textViewProfileName.setText(youTubeComment.getAuthorDisplayName());
-                            textViewCommentText.setText(youTubeComment.getCommentText());
-                            textViewLikeCount.setText(youTubeComment.getLikeCount());
-                            switch (youTubeComment.getViewerRating()) {
-                                case "like": {
-                                    imageViewLike.setImageDrawable(getResources().getDrawable(R.drawable.liked_video));
-                                }
-                                break;
-                                case "dislike": {
-                                    imageViewDislike.setImageDrawable(getResources().getDrawable(R.drawable.disliked_video));
-                                }
-                                break;
-                            }
-                        }
-                    }
-                });
-    }
-
     private AsyncGetComments getYouTubeCommentReplies() {
-        return new AsyncGetComments(getActivity(), null, nextPageToken, commentId,
+        return new AsyncGetComments(getActivity(), null, nextPageToken, youTubeComment.getID(),
                 new TaskCompleted() {
                     @Override
                     public void onTaskComplete(YouTubeResult result) {

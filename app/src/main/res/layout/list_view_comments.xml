@@ -13,8 +13,8 @@
         android:layout_marginLeft="20dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
-        app:srcCompat="@mipmap/profile_pic"
-        android:contentDescription="@string/profile_picture" />
+        android:contentDescription="@string/profile_picture"
+        app:srcCompat="@mipmap/profile_pic" />
 
     <TextView
         android:id="@+id/textViewProfileName"
@@ -91,7 +91,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="24dp"
             android:gravity="center_vertical|end"
             android:orientation="horizontal">
 
@@ -102,6 +102,16 @@
                 android:layout_marginEnd="7dp"
                 android:layout_marginRight="7dp"
                 android:textSize="12sp" />
+
+            <Button
+                android:id="@+id/buttonEditComment"
+                android:layout_width="24dp"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="2dp"
+                android:layout_marginEnd="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="2dp"
+                android:background="@drawable/ic_options_menu" />
         </LinearLayout>
     </LinearLayout>
 

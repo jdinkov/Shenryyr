@@ -1,5 +1,6 @@
 package com.wordpress.dnvsoft.android.shenryyr;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -24,10 +25,16 @@ public class VideoFragmentComments extends Fragment {
 
     private String videoID;
     private String nextPageTokenCommentThread;
+    private String commentCount;
     private CommentThreadAdapter adapter;
     private ArrayList<YouTubeCommentThread> commentThreads = new ArrayList<>();
     private LinearLayout footer;
     private Button buttonLoadMore;
+    private OnCommentCountUpdate callback;
+
+    interface OnCommentCountUpdate {
+        String getCommentCount();
+    }
 
     public VideoFragmentComments() {
     }
@@ -38,6 +45,13 @@ public class VideoFragmentComments extends Fragment {
         bundle.putString("VIDEO_ID", id);
         videoFragmentComments.setArguments(bundle);
         return videoFragmentComments;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        callback = (OnCommentCountUpdate) context;
     }
 
     @Override
@@ -54,7 +68,7 @@ public class VideoFragmentComments extends Fragment {
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
-        if (commentThreads.size() != 0 && commentThreads.size() % 20 == 0) {
+        if (nextPageTokenCommentThread != null) {
             footer.setVisibility(View.VISIBLE);
         }
     }
@@ -81,6 +95,8 @@ public class VideoFragmentComments extends Fragment {
         listViewComments.setAdapter(adapter);
 
         adapter.notifyDataSetChanged();
+
+        commentCount = callback.getCommentCount();
 
         return fragment;
     }
