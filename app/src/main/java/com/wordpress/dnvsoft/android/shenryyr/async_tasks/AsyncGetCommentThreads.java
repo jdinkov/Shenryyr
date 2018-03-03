@@ -55,7 +55,8 @@ public class AsyncGetCommentThreads extends AsyncYoutube {
                 commentThread.setCommentText(response.getItems().get(i).getSnippet().getTopLevelComment().getSnippet().getTextOriginal());
                 commentThread.setViewerRating(response.getItems().get(i).getSnippet().getTopLevelComment().getSnippet().getViewerRating());
                 commentThread.setLikeCount(response.getItems().get(i).getSnippet().getTopLevelComment().getSnippet().getLikeCount().toString());
-                commentThread.setAuthorChannelId(response.getItems().get(i).getSnippet().getTopLevelComment().getSnippet().getAuthorChannelId().toString());
+                String authorChannelId = response.getItems().get(i).getSnippet().getTopLevelComment().getSnippet().getAuthorChannelId().toString();
+                commentThread.setAuthorChannelId(authorChannelId.substring(7, authorChannelId.length() - 1));
 
                 commentThreadArrayList.add(commentThread);
             }

@@ -50,7 +50,8 @@ public class AsyncGetComments extends AsyncYoutube {
             comment.setCommentText(response.getItems().get(i).getSnippet().getTextOriginal());
             comment.setViewerRating(response.getItems().get(i).getSnippet().getViewerRating());
             comment.setLikeCount(response.getItems().get(i).getSnippet().getLikeCount().toString());
-            comment.setAuthorChannelId(response.getItems().get(i).getSnippet().getAuthorChannelId().toString());
+            String authorChannelId = response.getItems().get(i).getSnippet().getAuthorChannelId().toString();
+            comment.setAuthorChannelId(authorChannelId.substring(7, authorChannelId.length() - 1));
 
             youTubeComments.add(comment);
         }

@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import com.wordpress.dnvsoft.android.shenryyr.R;
 import com.wordpress.dnvsoft.android.shenryyr.menus.CommentOptionMenu;
+import com.wordpress.dnvsoft.android.shenryyr.menus.EditCommentMenu;
 import com.wordpress.dnvsoft.android.shenryyr.models.YouTubeComment;
 
 import java.util.ArrayList;
@@ -23,19 +24,22 @@ public class CommentAdapter extends ArrayAdapter {
 
     protected Context context;
     protected int layout;
-    private boolean isPaddingSet;
+    private boolean isReply;
+    EditCommentMenu.OnCommentEditListener listener;
     String channelId;
     ArrayList objects;
 
-    public CommentAdapter(@NonNull Context context, int layout, ArrayList objects, boolean isPaddingSet) {
+    public CommentAdapter(@NonNull Context context, int layout, ArrayList objects, boolean isReply,
+                          EditCommentMenu.OnCommentEditListener listener) {
         super(context, layout, objects);
         this.context = context;
         this.layout = layout;
         this.objects = objects;
-        this.isPaddingSet = isPaddingSet;
+        this.isReply = isReply;
         SharedPreferences preferences =
                 context.getSharedPreferences("CHANNEL_ID_PREFERENCES", Context.MODE_PRIVATE);
         channelId = preferences.getString("CHANNEL_ID", null);
+        this.listener = listener;
     }
 
     @NonNull
@@ -46,7 +50,7 @@ public class CommentAdapter extends ArrayAdapter {
             convertView = inflater.inflate(layout, parent, false);
         }
 
-        if (isPaddingSet) {
+        if (isReply) {
             float scale = context.getResources().getDisplayMetrics().density;
             convertView.setPadding((int) scale * 50, 0, 0, 0);
         }
@@ -65,7 +69,7 @@ public class CommentAdapter extends ArrayAdapter {
         textViewCommentText.setText(youTubeComment.getCommentText());
         textViewLikeCount.setText(youTubeComment.getLikeCount());
         buttonEditComment.setTag(position);
-        if (isPaddingSet && !youTubeComment.getAuthorChannelId().equals(channelId)) {
+        if (isReply && !youTubeComment.getAuthorChannelId().equals(channelId)) {
             buttonEditComment.setVisibility(View.GONE);
         } else {
             buttonEditComment.setVisibility(View.VISIBLE);
@@ -102,7 +106,7 @@ public class CommentAdapter extends ArrayAdapter {
             option = CommentOptionMenu.OptionsToDisplay.NONE;
         }
 
-        CommentOptionMenu menu = new CommentOptionMenu(context, comment.getID(), option);
+        CommentOptionMenu menu = new CommentOptionMenu(context, comment.getID(), option, null, listener);
         menu.ShowDialog();
     }
 }

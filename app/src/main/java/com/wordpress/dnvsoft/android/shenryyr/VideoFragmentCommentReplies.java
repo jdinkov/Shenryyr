@@ -19,6 +19,7 @@ import com.squareup.picasso.Picasso;
 import com.wordpress.dnvsoft.android.shenryyr.adapters.CommentAdapter;
 import com.wordpress.dnvsoft.android.shenryyr.async_tasks.AsyncGetComments;
 import com.wordpress.dnvsoft.android.shenryyr.async_tasks.TaskCompleted;
+import com.wordpress.dnvsoft.android.shenryyr.menus.EditCommentMenu;
 import com.wordpress.dnvsoft.android.shenryyr.menus.InsertCommentReplyMenu;
 import com.wordpress.dnvsoft.android.shenryyr.models.YouTubeComment;
 import com.wordpress.dnvsoft.android.shenryyr.models.YouTubeResult;
@@ -26,7 +27,7 @@ import com.wordpress.dnvsoft.android.shenryyr.network.Network;
 
 import java.util.ArrayList;
 
-public class VideoFragmentCommentReplies extends Fragment {
+public class VideoFragmentCommentReplies extends Fragment implements EditCommentMenu.OnCommentEditListener {
 
     private String nextPageToken;
     private LinearLayout footer;
@@ -131,7 +132,8 @@ public class VideoFragmentCommentReplies extends Fragment {
 
         buttonLoadMore.setOnClickListener(onClickListener);
 
-        adapter = new CommentAdapter(getActivity(), R.layout.list_view_comments, youTubeComments, true);
+        adapter = new CommentAdapter(getActivity(), R.layout.list_view_comments, youTubeComments, true,
+                VideoFragmentCommentReplies.this);
         listView.setAdapter(adapter);
 
         adapter.notifyDataSetChanged();
@@ -183,5 +185,11 @@ public class VideoFragmentCommentReplies extends Fragment {
                         }
                     }
                 });
+    }
+
+    @Override
+    public void onFinishEdit() {
+        youTubeComments.clear();
+        getYouTubeCommentReplies().execute();
     }
 }

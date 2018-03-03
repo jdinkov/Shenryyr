@@ -13,14 +13,19 @@ import com.wordpress.dnvsoft.android.shenryyr.R;
 import com.wordpress.dnvsoft.android.shenryyr.VideoActivity;
 import com.wordpress.dnvsoft.android.shenryyr.VideoFragmentCommentReplies;
 import com.wordpress.dnvsoft.android.shenryyr.menus.CommentOptionMenu;
+import com.wordpress.dnvsoft.android.shenryyr.menus.EditCommentMenu;
 import com.wordpress.dnvsoft.android.shenryyr.models.YouTubeCommentThread;
 
 import java.util.ArrayList;
 
 public class CommentThreadAdapter extends CommentAdapter {
 
-    public CommentThreadAdapter(@NonNull Context context, int layout, ArrayList objects) {
-        super(context, layout, objects, false);
+    private String videoId;
+
+    public CommentThreadAdapter(@NonNull Context context, int layout, ArrayList objects, String videoId,
+                                EditCommentMenu.OnCommentEditListener listener) {
+        super(context, layout, objects, false, listener);
+        this.videoId = videoId;
     }
 
     @NonNull
@@ -79,17 +84,17 @@ public class CommentThreadAdapter extends CommentAdapter {
     protected void SelectOption(int position) {
         YouTubeCommentThread comment = (YouTubeCommentThread) objects.get(position);
         Enum<CommentOptionMenu.OptionsToDisplay> option;
-        if (comment.getCanReply()) {
+        if (comment.getCanReply() && comment.getAuthorChannelId().equals(channelId)) {
+            option = CommentOptionMenu.OptionsToDisplay.INSERT_AND_EDIT;
+        } else if (comment.getCanReply()) {
             option = CommentOptionMenu.OptionsToDisplay.INSERT_REPLY;
         } else if (comment.getAuthorChannelId().equals(channelId)) {
             option = CommentOptionMenu.OptionsToDisplay.EDIT;
-        } else if (comment.getCanReply() && comment.getAuthorChannelId().equals(channelId)) {
-            option = CommentOptionMenu.OptionsToDisplay.INSERT_AND_EDIT;
         } else {
             option = CommentOptionMenu.OptionsToDisplay.NONE;
         }
 
-        CommentOptionMenu menu = new CommentOptionMenu(context, comment.getID(), option);
+        CommentOptionMenu menu = new CommentOptionMenu(context, comment.getID(), option, videoId, listener);
         menu.ShowDialog();
     }
 }
