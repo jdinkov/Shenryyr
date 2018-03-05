@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 
+import com.wordpress.dnvsoft.android.shenryyr.OnCommentAddEditListener;
 import com.wordpress.dnvsoft.android.shenryyr.R;
 
 public class CommentOptionMenu {
@@ -12,7 +13,8 @@ public class CommentOptionMenu {
     private int checkedItem = -1;
     private String commentId;
     private String videoId;
-    private EditCommentMenu.OnCommentEditListener listener;
+    private String commentText;
+    private OnCommentAddEditListener listener;
     private String[] optionArray;
     private final String NO_OPTION = " No Option Available ";
     private final String ADD_REPLY = " Add a Reply ";
@@ -23,12 +25,13 @@ public class CommentOptionMenu {
         NONE, INSERT_REPLY, EDIT, INSERT_AND_EDIT
     }
 
-    public CommentOptionMenu(Context c, String commentId, Enum<OptionsToDisplay> options, String videoId,
-                             EditCommentMenu.OnCommentEditListener listener) {
+    public CommentOptionMenu(Context c, String commentId, String commentText, Enum<OptionsToDisplay> options, String videoId,
+                             OnCommentAddEditListener listener) {
         this.context = c;
         this.commentId = commentId;
         optionArray = getOptions(options);
         this.videoId = videoId;
+        this.commentText = commentText;
         this.listener = listener;
     }
 
@@ -96,16 +99,16 @@ public class CommentOptionMenu {
     private void checkSelectedOption(String returnValue) {
         switch (returnValue) {
             case ADD_REPLY: {
-                InsertCommentReplyMenu commentReplyMenu = new InsertCommentReplyMenu(context, commentId);
+                InsertCommentReplyMenu commentReplyMenu = new InsertCommentReplyMenu(context, commentId, listener);
                 commentReplyMenu.ShowDialog();
             }
             break;
             case EDIT: {
                 if (videoId == null) {
-                    EditCommentMenu menu = new EditCommentMenu(context, commentId, listener);
+                    EditCommentMenu menu = new EditCommentMenu(context, commentId, commentText, listener);
                     menu.ShowDialog();
                 } else {
-                    EditCommentThreadMenu menu = new EditCommentThreadMenu(context, commentId, listener);
+                    EditCommentThreadMenu menu = new EditCommentThreadMenu(context, commentId, commentText, listener);
                     menu.ShowDialog();
                 }
             }

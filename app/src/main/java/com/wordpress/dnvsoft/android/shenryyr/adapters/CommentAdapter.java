@@ -13,9 +13,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.wordpress.dnvsoft.android.shenryyr.OnCommentAddEditListener;
 import com.wordpress.dnvsoft.android.shenryyr.R;
 import com.wordpress.dnvsoft.android.shenryyr.menus.CommentOptionMenu;
-import com.wordpress.dnvsoft.android.shenryyr.menus.EditCommentMenu;
 import com.wordpress.dnvsoft.android.shenryyr.models.YouTubeComment;
 
 import java.util.ArrayList;
@@ -25,12 +25,12 @@ public class CommentAdapter extends ArrayAdapter {
     protected Context context;
     protected int layout;
     private boolean isReply;
-    EditCommentMenu.OnCommentEditListener listener;
+    OnCommentAddEditListener listener;
     String channelId;
     ArrayList objects;
 
     public CommentAdapter(@NonNull Context context, int layout, ArrayList objects, boolean isReply,
-                          EditCommentMenu.OnCommentEditListener listener) {
+                          OnCommentAddEditListener listener) {
         super(context, layout, objects);
         this.context = context;
         this.layout = layout;
@@ -106,7 +106,8 @@ public class CommentAdapter extends ArrayAdapter {
             option = CommentOptionMenu.OptionsToDisplay.NONE;
         }
 
-        CommentOptionMenu menu = new CommentOptionMenu(context, comment.getID(), option, null, listener);
+        CommentOptionMenu menu = new CommentOptionMenu(
+                context, comment.getID(), comment.getCommentText(), option, null, listener);
         menu.ShowDialog();
     }
 }

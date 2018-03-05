@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.wordpress.dnvsoft.android.shenryyr.OnCommentAddEditListener;
 import com.wordpress.dnvsoft.android.shenryyr.R;
 import com.wordpress.dnvsoft.android.shenryyr.async_tasks.AsyncInsertCommentReply;
 import com.wordpress.dnvsoft.android.shenryyr.async_tasks.TaskCompleted;
@@ -18,10 +19,12 @@ public class InsertCommentReplyMenu {
 
     private String commentId;
     private Context context;
+    private OnCommentAddEditListener listener;
 
-    public InsertCommentReplyMenu(Context context, String id) {
+    public InsertCommentReplyMenu(Context context, String id, OnCommentAddEditListener listener) {
         this.context = context;
         this.commentId = id;
+        this.listener = listener;
     }
 
     public void ShowDialog() {
@@ -44,6 +47,7 @@ public class InsertCommentReplyMenu {
                             new TaskCompleted() {
                                 @Override
                                 public void onTaskComplete(YouTubeResult result) {
+                                    listener.onFinishEdit();
                                 }
                             });
 

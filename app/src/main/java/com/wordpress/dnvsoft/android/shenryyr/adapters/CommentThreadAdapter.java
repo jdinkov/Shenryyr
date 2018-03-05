@@ -9,11 +9,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.wordpress.dnvsoft.android.shenryyr.OnCommentAddEditListener;
 import com.wordpress.dnvsoft.android.shenryyr.R;
 import com.wordpress.dnvsoft.android.shenryyr.VideoActivity;
 import com.wordpress.dnvsoft.android.shenryyr.VideoFragmentCommentReplies;
 import com.wordpress.dnvsoft.android.shenryyr.menus.CommentOptionMenu;
-import com.wordpress.dnvsoft.android.shenryyr.menus.EditCommentMenu;
 import com.wordpress.dnvsoft.android.shenryyr.models.YouTubeCommentThread;
 
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ public class CommentThreadAdapter extends CommentAdapter {
     private String videoId;
 
     public CommentThreadAdapter(@NonNull Context context, int layout, ArrayList objects, String videoId,
-                                EditCommentMenu.OnCommentEditListener listener) {
+                                OnCommentAddEditListener listener) {
         super(context, layout, objects, false, listener);
         this.videoId = videoId;
     }
@@ -94,7 +94,8 @@ public class CommentThreadAdapter extends CommentAdapter {
             option = CommentOptionMenu.OptionsToDisplay.NONE;
         }
 
-        CommentOptionMenu menu = new CommentOptionMenu(context, comment.getID(), option, videoId, listener);
+        CommentOptionMenu menu = new CommentOptionMenu(
+                context, comment.getID(), comment.getCommentText(), option, videoId, listener);
         menu.ShowDialog();
     }
 }

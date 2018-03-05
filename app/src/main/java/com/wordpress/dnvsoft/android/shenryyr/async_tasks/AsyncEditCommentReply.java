@@ -24,8 +24,9 @@ public class AsyncEditCommentReply extends AsyncYoutube {
     YouTubeResult DoItInBackground() throws IOException {
         Comment comment = new Comment();
         CommentSnippet commentSnippet = new CommentSnippet();
-        commentSnippet.setParentId(commentId);
+
         commentSnippet.setTextOriginal(commentText);
+        comment.setId(commentId);
         comment.setSnippet(commentSnippet);
 
         YouTube.Comments.Update update = youtube.comments().update("snippet", comment);

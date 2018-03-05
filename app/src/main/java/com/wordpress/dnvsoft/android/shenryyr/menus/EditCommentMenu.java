@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.wordpress.dnvsoft.android.shenryyr.OnCommentAddEditListener;
 import com.wordpress.dnvsoft.android.shenryyr.R;
 import com.wordpress.dnvsoft.android.shenryyr.async_tasks.AsyncEditCommentReply;
 import com.wordpress.dnvsoft.android.shenryyr.async_tasks.TaskCompleted;
@@ -16,18 +17,16 @@ import com.wordpress.dnvsoft.android.shenryyr.network.Network;
 
 public class EditCommentMenu {
 
-    public interface OnCommentEditListener {
-        void onFinishEdit();
-    }
-
     protected Context context;
+    private String commentText;
     String Id;
     EditText editText;
-    OnCommentEditListener onCommentEditListener;
+    OnCommentAddEditListener onCommentEditListener;
 
-    EditCommentMenu(Context context, String Id, OnCommentEditListener listener) {
+    EditCommentMenu(Context context, String Id, String commentText, OnCommentAddEditListener listener) {
         this.context = context;
         this.Id = Id;
+        this.commentText = commentText;
         this.onCommentEditListener = listener;
     }
 
@@ -37,6 +36,7 @@ public class EditCommentMenu {
         LayoutInflater inflater = LayoutInflater.from(context);
         View layout = inflater.inflate(R.layout.menu_insert_comment, null);
         editText = (EditText) layout.findViewById(R.id.editTextInsertComment);
+        editText.setText(commentText);
 
         builder.setTitle("Edit comment");
 

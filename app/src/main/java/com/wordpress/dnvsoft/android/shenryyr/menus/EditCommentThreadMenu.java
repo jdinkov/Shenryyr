@@ -3,6 +3,7 @@ package com.wordpress.dnvsoft.android.shenryyr.menus;
 import android.content.Context;
 import android.widget.Toast;
 
+import com.wordpress.dnvsoft.android.shenryyr.OnCommentAddEditListener;
 import com.wordpress.dnvsoft.android.shenryyr.R;
 import com.wordpress.dnvsoft.android.shenryyr.async_tasks.AsyncEditCommentThread;
 import com.wordpress.dnvsoft.android.shenryyr.async_tasks.TaskCompleted;
@@ -11,8 +12,8 @@ import com.wordpress.dnvsoft.android.shenryyr.network.Network;
 
 public class EditCommentThreadMenu extends EditCommentMenu {
 
-    EditCommentThreadMenu(Context context, String Id, OnCommentEditListener listener) {
-        super(context, Id, listener);
+    EditCommentThreadMenu(Context context, String Id, String commentText, OnCommentAddEditListener listener) {
+        super(context, Id, commentText, listener);
     }
 
     @Override

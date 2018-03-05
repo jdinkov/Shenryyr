@@ -19,7 +19,6 @@ import com.squareup.picasso.Picasso;
 import com.wordpress.dnvsoft.android.shenryyr.adapters.CommentAdapter;
 import com.wordpress.dnvsoft.android.shenryyr.async_tasks.AsyncGetComments;
 import com.wordpress.dnvsoft.android.shenryyr.async_tasks.TaskCompleted;
-import com.wordpress.dnvsoft.android.shenryyr.menus.EditCommentMenu;
 import com.wordpress.dnvsoft.android.shenryyr.menus.InsertCommentReplyMenu;
 import com.wordpress.dnvsoft.android.shenryyr.models.YouTubeComment;
 import com.wordpress.dnvsoft.android.shenryyr.models.YouTubeResult;
@@ -27,7 +26,7 @@ import com.wordpress.dnvsoft.android.shenryyr.network.Network;
 
 import java.util.ArrayList;
 
-public class VideoFragmentCommentReplies extends Fragment implements EditCommentMenu.OnCommentEditListener {
+public class VideoFragmentCommentReplies extends Fragment implements OnCommentAddEditListener {
 
     private String nextPageToken;
     private LinearLayout footer;
@@ -157,7 +156,8 @@ public class VideoFragmentCommentReplies extends Fragment implements EditComment
                 break;
                 case R.id.buttonAddReply: {
                     if (GoogleSignIn.getLastSignedInAccount(getActivity()) != null) {
-                        InsertCommentReplyMenu commentReplyMenu = new InsertCommentReplyMenu(getActivity(), youTubeComment.getID());
+                        InsertCommentReplyMenu commentReplyMenu = new InsertCommentReplyMenu(
+                                getActivity(), youTubeComment.getID(), VideoFragmentCommentReplies.this);
                         commentReplyMenu.ShowDialog();
                     } else {
                         Toast.makeText(getActivity(), R.string.unauthorized, Toast.LENGTH_LONG).show();

@@ -142,7 +142,7 @@ public class VideoActivity extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
-        youTubePlayerFragment.initialize(YoutubeInfo.DEVELOPER_KEY, this);
+        //youTubePlayerFragment.initialize(YoutubeInfo.DEVELOPER_KEY, this);
     }
 
     @Override

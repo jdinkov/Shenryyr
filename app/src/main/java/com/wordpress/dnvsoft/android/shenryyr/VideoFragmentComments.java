@@ -15,14 +15,13 @@ import android.widget.Toast;
 import com.wordpress.dnvsoft.android.shenryyr.adapters.CommentThreadAdapter;
 import com.wordpress.dnvsoft.android.shenryyr.async_tasks.AsyncGetCommentThreads;
 import com.wordpress.dnvsoft.android.shenryyr.async_tasks.TaskCompleted;
-import com.wordpress.dnvsoft.android.shenryyr.menus.EditCommentThreadMenu;
 import com.wordpress.dnvsoft.android.shenryyr.models.YouTubeCommentThread;
 import com.wordpress.dnvsoft.android.shenryyr.models.YouTubeResult;
 import com.wordpress.dnvsoft.android.shenryyr.network.Network;
 
 import java.util.ArrayList;
 
-public class VideoFragmentComments extends Fragment implements EditCommentThreadMenu.OnCommentEditListener {
+public class VideoFragmentComments extends Fragment implements OnCommentAddEditListener {
 
     private String videoID;
     private String nextPageTokenCommentThread;
