@@ -15,15 +15,16 @@ import com.wordpress.dnvsoft.android.shenryyr.async_tasks.TaskCompleted;
 import com.wordpress.dnvsoft.android.shenryyr.models.YouTubeResult;
 import com.wordpress.dnvsoft.android.shenryyr.network.Network;
 
-public class InsertCommentReplyMenu {
+public class InsertCommentMenu {
 
-    private String commentId;
-    private Context context;
-    private OnCommentAddEditListener listener;
+    String Id;
+    protected Context context;
+    EditText editText;
+    OnCommentAddEditListener listener;
 
-    public InsertCommentReplyMenu(Context context, String id, OnCommentAddEditListener listener) {
+    public InsertCommentMenu(Context context, String id, OnCommentAddEditListener listener) {
         this.context = context;
-        this.commentId = id;
+        this.Id = id;
         this.listener = listener;
     }
 
@@ -32,9 +33,9 @@ public class InsertCommentReplyMenu {
 
         LayoutInflater inflater = LayoutInflater.from(context);
         View layout = inflater.inflate(R.layout.menu_insert_comment, null);
-        final EditText editText = (EditText) layout.findViewById(R.id.editTextInsertComment);
+        editText = (EditText) layout.findViewById(R.id.editTextInsertComment);
 
-        builder.setTitle("Add a reply.");
+        builder.setTitle(setTitle());
 
         builder.setView(layout);
 
@@ -42,16 +43,7 @@ public class InsertCommentReplyMenu {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (Network.IsDeviceOnline(context)) {
-                    AsyncInsertCommentReply asyncInsertCommentReply = new AsyncInsertCommentReply(
-                            context, commentId, editText.getText().toString(),
-                            new TaskCompleted() {
-                                @Override
-                                public void onTaskComplete(YouTubeResult result) {
-                                    listener.onFinishEdit();
-                                }
-                            });
-
-                    asyncInsertCommentReply.execute();
+                    onPositiveButtonClicked();
                 } else {
                     Toast.makeText(context, R.string.no_network, Toast.LENGTH_LONG).show();
                 }
@@ -61,5 +53,23 @@ public class InsertCommentReplyMenu {
         builder.setNegativeButton(R.string.negative_button, null);
 
         builder.create().show();
+    }
+
+    protected String setTitle() {
+        return "Add a reply.";
+    }
+
+    protected void onPositiveButtonClicked() {
+        AsyncInsertCommentReply asyncInsertCommentReply = new AsyncInsertCommentReply(
+                context, Id, editText.getText().toString(),
+                new TaskCompleted() {
+                    @Override
+                    public void onTaskComplete(YouTubeResult result) {
+                        Toast.makeText(context, "Comment added.", Toast.LENGTH_SHORT).show();
+                        listener.onFinishEdit();
+                    }
+                });
+
+        asyncInsertCommentReply.execute();
     }
 }

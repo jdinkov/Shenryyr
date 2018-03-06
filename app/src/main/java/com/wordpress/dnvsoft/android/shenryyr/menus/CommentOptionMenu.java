@@ -3,9 +3,14 @@ package com.wordpress.dnvsoft.android.shenryyr.menus;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.widget.Toast;
 
 import com.wordpress.dnvsoft.android.shenryyr.OnCommentAddEditListener;
 import com.wordpress.dnvsoft.android.shenryyr.R;
+import com.wordpress.dnvsoft.android.shenryyr.async_tasks.AsyncDeleteComment;
+import com.wordpress.dnvsoft.android.shenryyr.async_tasks.TaskCompleted;
+import com.wordpress.dnvsoft.android.shenryyr.models.YouTubeResult;
+import com.wordpress.dnvsoft.android.shenryyr.network.Network;
 
 public class CommentOptionMenu {
 
@@ -16,8 +21,8 @@ public class CommentOptionMenu {
     private String commentText;
     private OnCommentAddEditListener listener;
     private String[] optionArray;
-    private final String NO_OPTION = " No Option Available ";
-    private final String ADD_REPLY = " Add a Reply ";
+    private final String NO_OPTION = " No option available ";
+    private final String ADD_REPLY = " Add a reply ";
     private final String EDIT = " Edit ";
     private final String DELETE = " Delete ";
 
@@ -99,7 +104,7 @@ public class CommentOptionMenu {
     private void checkSelectedOption(String returnValue) {
         switch (returnValue) {
             case ADD_REPLY: {
-                InsertCommentReplyMenu commentReplyMenu = new InsertCommentReplyMenu(context, commentId, listener);
+                InsertCommentMenu commentReplyMenu = new InsertCommentMenu(context, commentId, listener);
                 commentReplyMenu.ShowDialog();
             }
             break;
@@ -113,6 +118,40 @@ public class CommentOptionMenu {
                 }
             }
             break;
+            case DELETE: {
+                ShowDialogOnDelete();
+            }
+            break;
         }
+    }
+
+    private void ShowDialogOnDelete() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Delete Comment?");
+        builder.setMessage("Are you sure you want to delete this comment?");
+
+        builder.setPositiveButton(R.string.positive_button, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (Network.IsDeviceOnline(context)) {
+                    AsyncDeleteComment asyncDeleteComment = new AsyncDeleteComment(
+                            context, commentId, new TaskCompleted() {
+                        @Override
+                        public void onTaskComplete(YouTubeResult result) {
+                            Toast.makeText(context, "Comment deleted.", Toast.LENGTH_SHORT).show();
+                            listener.onFinishEdit();
+                        }
+                    });
+
+                    asyncDeleteComment.execute();
+                } else {
+                    Toast.makeText(context, R.string.no_network, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        builder.setNegativeButton(R.string.negative_button, null);
+
+        builder.create().show();
     }
 }

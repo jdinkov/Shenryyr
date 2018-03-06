@@ -24,6 +24,7 @@ public class EditCommentThreadMenu extends EditCommentMenu {
                     new TaskCompleted() {
                         @Override
                         public void onTaskComplete(YouTubeResult result) {
+                            Toast.makeText(context, "Comment updated.", Toast.LENGTH_SHORT).show();
                             onCommentEditListener.onFinishEdit();
                         }
                     });

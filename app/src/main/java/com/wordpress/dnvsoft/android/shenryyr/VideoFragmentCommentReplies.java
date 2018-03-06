@@ -19,7 +19,7 @@ import com.squareup.picasso.Picasso;
 import com.wordpress.dnvsoft.android.shenryyr.adapters.CommentAdapter;
 import com.wordpress.dnvsoft.android.shenryyr.async_tasks.AsyncGetComments;
 import com.wordpress.dnvsoft.android.shenryyr.async_tasks.TaskCompleted;
-import com.wordpress.dnvsoft.android.shenryyr.menus.InsertCommentReplyMenu;
+import com.wordpress.dnvsoft.android.shenryyr.menus.InsertCommentMenu;
 import com.wordpress.dnvsoft.android.shenryyr.models.YouTubeComment;
 import com.wordpress.dnvsoft.android.shenryyr.models.YouTubeResult;
 import com.wordpress.dnvsoft.android.shenryyr.network.Network;
@@ -156,7 +156,7 @@ public class VideoFragmentCommentReplies extends Fragment implements OnCommentAd
                 break;
                 case R.id.buttonAddReply: {
                     if (GoogleSignIn.getLastSignedInAccount(getActivity()) != null) {
-                        InsertCommentReplyMenu commentReplyMenu = new InsertCommentReplyMenu(
+                        InsertCommentMenu commentReplyMenu = new InsertCommentMenu(
                                 getActivity(), youTubeComment.getID(), VideoFragmentCommentReplies.this);
                         commentReplyMenu.ShowDialog();
                     } else {

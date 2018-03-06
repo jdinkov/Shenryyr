@@ -7,14 +7,19 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.wordpress.dnvsoft.android.shenryyr.adapters.CommentThreadAdapter;
 import com.wordpress.dnvsoft.android.shenryyr.async_tasks.AsyncGetCommentThreads;
 import com.wordpress.dnvsoft.android.shenryyr.async_tasks.TaskCompleted;
+import com.wordpress.dnvsoft.android.shenryyr.menus.InsertCommentThreadMenu;
 import com.wordpress.dnvsoft.android.shenryyr.models.YouTubeCommentThread;
 import com.wordpress.dnvsoft.android.shenryyr.models.YouTubeResult;
 import com.wordpress.dnvsoft.android.shenryyr.network.Network;
@@ -25,11 +30,11 @@ public class VideoFragmentComments extends Fragment implements OnCommentAddEditL
 
     private String videoID;
     private String nextPageTokenCommentThread;
-    private String commentCount;
     private CommentThreadAdapter adapter;
     private ArrayList<YouTubeCommentThread> commentThreads = new ArrayList<>();
     private LinearLayout footer;
     private Button buttonLoadMore;
+    private TextView textViewCommentCount;
     private OnCommentCountUpdate callback;
 
     @Override
@@ -75,6 +80,7 @@ public class VideoFragmentComments extends Fragment implements OnCommentAddEditL
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
         if (nextPageTokenCommentThread != null) {
+            updateCommentCount();
             footer.setVisibility(View.VISIBLE);
         }
     }
@@ -84,6 +90,12 @@ public class VideoFragmentComments extends Fragment implements OnCommentAddEditL
         View fragment = inflater.inflate(R.layout.fragment_video_comments, container, false);
 
         ListView listViewComments = (ListView) fragment.findViewById(R.id.listViewComments);
+
+        RelativeLayout header = (RelativeLayout) inflater.inflate(R.layout.header_fragment_comments, listViewComments, false);
+        Button buttonAddComment = (Button) header.findViewById(R.id.buttonAddComment);
+        textViewCommentCount = (TextView) header.findViewById(R.id.textCommentCount);
+        Spinner spinner = (Spinner) header.findViewById(R.id.spinnerSortComments);
+        listViewComments.addHeaderView(header);
 
         footer = (LinearLayout) inflater.inflate(R.layout.footer_main, listViewComments, false);
         buttonLoadMore = (Button) footer.findViewById(R.id.buttonFooterMain);
@@ -103,10 +115,29 @@ public class VideoFragmentComments extends Fragment implements OnCommentAddEditL
 
         adapter.notifyDataSetChanged();
 
-        commentCount = callback.getCommentCount();
+        updateCommentCount();
+        buttonAddComment.setOnClickListener(addCommentOnClickListener);
+
+        String[] spinnerEntities = {
+                "Top comments",
+                "Newest first"
+        };
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
+                getActivity(), R.layout.support_simple_spinner_dropdown_item, spinnerEntities);
+        spinner.setAdapter(arrayAdapter);
 
         return fragment;
     }
+
+    View.OnClickListener addCommentOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            InsertCommentThreadMenu insertCommentThreadMenu = new InsertCommentThreadMenu(
+                    getActivity(), videoID, VideoFragmentComments.this);
+
+            insertCommentThreadMenu.ShowDialog();
+        }
+    };
 
     View.OnClickListener buttonLoadMoreOnClickListener = new View.OnClickListener() {
         @Override
@@ -132,6 +163,7 @@ public class VideoFragmentComments extends Fragment implements OnCommentAddEditL
                                 commentThreads.addAll(result.getCommentThread());
                                 buttonLoadMore.setText(R.string.load_more);
                                 adapter.notifyDataSetChanged();
+                                updateCommentCount();
                             }
                         }
                     });
@@ -139,6 +171,16 @@ public class VideoFragmentComments extends Fragment implements OnCommentAddEditL
             asyncGetCommentThreads.execute();
         } else {
             Toast.makeText(getActivity(), R.string.no_network, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void updateCommentCount() {
+        if (getView() != null) {
+            String commentCount = callback.getCommentCount();
+            if (commentCount != null) {
+                String commentCountText = commentCount + " comments";
+                textViewCommentCount.setText(commentCountText);
+            }
         }
     }
 }

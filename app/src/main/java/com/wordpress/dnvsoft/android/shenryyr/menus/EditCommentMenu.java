@@ -38,7 +38,7 @@ public class EditCommentMenu {
         editText = (EditText) layout.findViewById(R.id.editTextInsertComment);
         editText.setText(commentText);
 
-        builder.setTitle("Edit comment");
+        builder.setTitle("Edit comment.");
 
         builder.setView(layout);
 
@@ -60,6 +60,7 @@ public class EditCommentMenu {
                     new TaskCompleted() {
                         @Override
                         public void onTaskComplete(YouTubeResult result) {
+                            Toast.makeText(context, "Comment updated.", Toast.LENGTH_SHORT).show();
                             onCommentEditListener.onFinishEdit();
                         }
                     });
