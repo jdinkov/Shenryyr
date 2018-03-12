@@ -1,6 +1,7 @@
 package com.wordpress.dnvsoft.android.shenryyr;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -41,6 +42,10 @@ public class VideoActivity extends AppCompatActivity
         setContentView(R.layout.activity_video);
 
         items = new ArrayList<>();
+
+        SharedPreferences.Editor editor = getSharedPreferences("COMMENT_THREAD_LIST", MODE_PRIVATE).edit();
+        editor.remove("COMMENT_LIST");
+        editor.apply();
 
         videoPosition = getIntent().getIntExtra("VIDEO_POSITION", Integer.MIN_VALUE);
         if (videoPosition != Integer.MIN_VALUE) {
@@ -142,7 +147,7 @@ public class VideoActivity extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
-        //youTubePlayerFragment.initialize(YoutubeInfo.DEVELOPER_KEY, this);
+        youTubePlayerFragment.initialize(YoutubeInfo.DEVELOPER_KEY, this);
     }
 
     @Override

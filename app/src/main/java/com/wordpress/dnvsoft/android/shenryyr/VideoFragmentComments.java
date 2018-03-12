@@ -1,6 +1,7 @@
 package com.wordpress.dnvsoft.android.shenryyr;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -24,6 +25,9 @@ import com.wordpress.dnvsoft.android.shenryyr.menus.InsertCommentThreadMenu;
 import com.wordpress.dnvsoft.android.shenryyr.models.YouTubeCommentThread;
 import com.wordpress.dnvsoft.android.shenryyr.models.YouTubeResult;
 import com.wordpress.dnvsoft.android.shenryyr.network.Network;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -72,8 +76,20 @@ public class VideoFragmentComments extends Fragment implements OnCommentAddEditL
         super.onCreate(savedInstanceState);
 
         videoID = getArguments().getString("VIDEO_ID");
+    }
 
-        if (commentThreads.size() == 0) {
+    @Override
+    public void onResume() {
+        super.onResume();
+        SharedPreferences preferences = getActivity().
+                getSharedPreferences("COMMENT_THREAD_LIST", Context.MODE_PRIVATE);
+        String tempString = preferences.getString("COMMENT_LIST", null);
+        if (tempString != null && commentThreads.size() == 0) {
+            commentThreads.addAll(commentThreadsFromJson(tempString));
+            if (commentThreads.size() % 20 == 0) {
+                footer.setVisibility(View.VISIBLE);
+            }
+        } else if (commentThreads.size() == 0) {
             getCommentThreads(getCommentsOrder());
         }
     }
@@ -167,6 +183,54 @@ public class VideoFragmentComments extends Fragment implements OnCommentAddEditL
         public void onNothingSelected(AdapterView<?> parent) {
         }
     };
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        SharedPreferences.Editor editor = getActivity().
+                getSharedPreferences("COMMENT_THREAD_LIST", Context.MODE_PRIVATE).edit();
+        editor.putString("COMMENT_LIST", commentThreadsToJson());
+        editor.apply();
+    }
+
+    private String commentThreadsToJson() {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            for (int i = 0; i < commentThreads.size(); i++) {
+                jsonObject.put(String.valueOf(i), commentThreads.get(i).toJson());
+            }
+        } catch (JSONException e) {
+            return null;
+        }
+
+        return jsonObject.toString();
+    }
+
+    private ArrayList<YouTubeCommentThread> commentThreadsFromJson(String jsonString) {
+        ArrayList<YouTubeCommentThread> tempArrayList = new ArrayList<>();
+        try {
+            JSONObject jsonObject = new JSONObject(jsonString);
+            for (int i = 0; i < jsonObject.length(); i++) {
+                JSONObject item = new JSONObject(jsonObject.getString(String.valueOf(i)));
+                YouTubeCommentThread tempCommentThread = new YouTubeCommentThread();
+                tempCommentThread.setID(item.getString("id"));
+                tempCommentThread.setAuthorDisplayName(item.getString("authorDisplayName"));
+                tempCommentThread.setAuthorImageUrl(item.getString("authorImageUrl"));
+                tempCommentThread.setAuthorChannelId(item.getString("authorChannelId"));
+                tempCommentThread.setCommentText(item.getString("commentText"));
+                tempCommentThread.setViewerRating(item.getString("viewerRating"));
+                tempCommentThread.setLikeCount(item.getString("likeCount"));
+                tempCommentThread.setCanReply(Boolean.valueOf(item.getString("canReply")));
+                tempCommentThread.setTotalReplyCount(item.getString("totalReplyCount"));
+                tempArrayList.add(tempCommentThread);
+            }
+        } catch (JSONException e) {
+            return null;
+        }
+
+        return tempArrayList;
+    }
 
     private void getCommentThreads(String order) {
         if (Network.IsDeviceOnline(getActivity())) {
