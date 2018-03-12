@@ -138,8 +138,10 @@ public class CommentOptionMenu {
                             context, commentId, new TaskCompleted() {
                         @Override
                         public void onTaskComplete(YouTubeResult result) {
-                            Toast.makeText(context, "Comment deleted.", Toast.LENGTH_SHORT).show();
-                            listener.onFinishEdit();
+                            if (!result.isCanceled()) {
+                                Toast.makeText(context, "Comment deleted.", Toast.LENGTH_SHORT).show();
+                                listener.onFinishEdit();
+                            }
                         }
                     });
 

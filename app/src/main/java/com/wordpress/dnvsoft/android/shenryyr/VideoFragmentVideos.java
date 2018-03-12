@@ -118,7 +118,7 @@ public class VideoFragmentVideos extends Fragment {
                         @Override
                         public void onTaskComplete(YouTubeResult result) {
                             if (!result.isCanceled() && result.getVideos() != null) {
-                                if (result.getVideos().size() == 20) {
+                                if (result.getVideos().size() % 20 == 0) {
                                     footer.setVisibility(View.VISIBLE);
                                 }
 

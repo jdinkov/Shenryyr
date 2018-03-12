@@ -174,7 +174,7 @@ public class VideoFragmentCommentReplies extends Fragment implements OnCommentAd
                     @Override
                     public void onTaskComplete(YouTubeResult result) {
                         if (!result.isCanceled() && result.getCommentReplies() != null) {
-                            if (result.getCommentReplies().size() == 20) {
+                            if (result.getCommentReplies().size() % 20 == 0) {
                                 footer.setVisibility(View.VISIBLE);
                             }
 

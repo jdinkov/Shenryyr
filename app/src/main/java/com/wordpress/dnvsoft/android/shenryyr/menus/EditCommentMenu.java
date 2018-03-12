@@ -60,8 +60,10 @@ public class EditCommentMenu {
                     new TaskCompleted() {
                         @Override
                         public void onTaskComplete(YouTubeResult result) {
-                            Toast.makeText(context, "Comment updated.", Toast.LENGTH_SHORT).show();
-                            onCommentEditListener.onFinishEdit();
+                            if (!result.isCanceled()) {
+                                Toast.makeText(context, "Comment updated.", Toast.LENGTH_SHORT).show();
+                                onCommentEditListener.onFinishEdit();
+                            }
                         }
                     });
 

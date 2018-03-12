@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -36,11 +37,12 @@ public class VideoFragmentComments extends Fragment implements OnCommentAddEditL
     private Button buttonLoadMore;
     private TextView textViewCommentCount;
     private OnCommentCountUpdate callback;
+    private int spinnerPosition;
 
     @Override
     public void onFinishEdit() {
         commentThreads.clear();
-        getCommentThreads();
+        getCommentThreads(getCommentsOrder());
     }
 
     interface OnCommentCountUpdate {
@@ -72,15 +74,15 @@ public class VideoFragmentComments extends Fragment implements OnCommentAddEditL
         videoID = getArguments().getString("VIDEO_ID");
 
         if (commentThreads.size() == 0) {
-            getCommentThreads();
+            getCommentThreads(getCommentsOrder());
         }
     }
 
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
+        updateCommentCount();
         if (nextPageTokenCommentThread != null) {
-            updateCommentCount();
             footer.setVisibility(View.VISIBLE);
         }
     }
@@ -125,6 +127,7 @@ public class VideoFragmentComments extends Fragment implements OnCommentAddEditL
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
                 getActivity(), R.layout.support_simple_spinner_dropdown_item, spinnerEntities);
         spinner.setAdapter(arrayAdapter);
+        spinner.setOnItemSelectedListener(onItemClickListener);
 
         return fragment;
     }
@@ -143,19 +146,37 @@ public class VideoFragmentComments extends Fragment implements OnCommentAddEditL
         @Override
         public void onClick(View v) {
             footer.setVisibility(View.INVISIBLE);
-            getCommentThreads();
+            getCommentThreads(getCommentsOrder());
         }
     };
 
-    private void getCommentThreads() {
+    AdapterView.OnItemSelectedListener onItemClickListener = new AdapterView.OnItemSelectedListener() {
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            if (spinnerPosition != position) {
+                spinnerPosition = position;
+                commentThreads.clear();
+                footer.setVisibility(View.GONE);
+                adapter.notifyDataSetChanged();
+                nextPageTokenCommentThread = null;
+                getCommentThreads(getCommentsOrder());
+            }
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+        }
+    };
+
+    private void getCommentThreads(String order) {
         if (Network.IsDeviceOnline(getActivity())) {
             AsyncGetCommentThreads asyncGetCommentThreads = new AsyncGetCommentThreads(getActivity(),
-                    "relevance", videoID, nextPageTokenCommentThread,
+                    order, videoID, nextPageTokenCommentThread,
                     new TaskCompleted() {
                         @Override
                         public void onTaskComplete(YouTubeResult result) {
                             if (!result.isCanceled() && result.getCommentThread() != null) {
-                                if (result.getCommentThread().size() == 20) {
+                                if (result.getCommentThread().size() % 20 == 0) {
                                     footer.setVisibility(View.VISIBLE);
                                 }
 
@@ -182,5 +203,17 @@ public class VideoFragmentComments extends Fragment implements OnCommentAddEditL
                 textViewCommentCount.setText(commentCountText);
             }
         }
+    }
+
+    private String getCommentsOrder() {
+        switch (spinnerPosition) {
+            case 0: {
+                return "relevance";
+            }
+            case 1: {
+                return "time";
+            }
+        }
+        return "relevance";
     }
 }
