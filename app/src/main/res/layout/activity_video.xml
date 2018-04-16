@@ -7,12 +7,20 @@
     android:orientation="vertical"
     tools:context="com.wordpress.dnvsoft.android.shenryyr.VideoActivity">
 
-    <fragment
-        android:id="@+id/youtube_fragment"
-        android:name="com.google.android.youtube.player.YouTubePlayerFragment"
+    <com.wordpress.dnvsoft.android.shenryyr.views.LinearLayoutWithTouchListener
+        android:id="@+id/layout_below_player"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:filterTouchesWhenObscured="false" />
+        android:orientation="horizontal">
+
+        <fragment
+            android:id="@+id/youtube_fragment"
+            android:name="com.google.android.youtube.player.YouTubePlayerFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:filterTouchesWhenObscured="false" />
+    </com.wordpress.dnvsoft.android.shenryyr.views.LinearLayoutWithTouchListener>
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"

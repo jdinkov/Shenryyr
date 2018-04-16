@@ -18,12 +18,15 @@ import com.google.android.youtube.player.YouTubePlayerFragment;
 import com.wordpress.dnvsoft.android.shenryyr.menus.MissingServiceMenu;
 import com.wordpress.dnvsoft.android.shenryyr.models.VideoItem;
 import com.wordpress.dnvsoft.android.shenryyr.models.VideoItemWrapper;
+import com.wordpress.dnvsoft.android.shenryyr.views.LinearLayoutWithTouchListener;
 
 import java.util.ArrayList;
 
 public class VideoActivity extends AppCompatActivity
         implements YouTubePlayer.OnInitializedListener,
-        VideoFragmentDescription.OnVideoDescriptionResponse, VideoFragmentComments.OnCommentCountUpdate {
+        VideoFragmentDescription.OnVideoDescriptionResponse,
+        VideoFragmentComments.OnCommentCountUpdate,
+        LinearLayoutWithTouchListener.OnYouTubePlayerGoBackAndForward {
 
     private String videoID;
     private boolean isMinimized;
@@ -173,6 +176,20 @@ public class VideoActivity extends AppCompatActivity
     @Override
     public String getCommentCount() {
         return commentCount;
+    }
+
+    @Override
+    public void youtubePlayerGoBack() {
+        if (youTubePlayer != null) {
+            youTubePlayer.seekRelativeMillis(-5000);
+        }
+    }
+
+    @Override
+    public void youtubePlayerGoForward() {
+        if (youTubePlayer != null) {
+            youTubePlayer.seekRelativeMillis(5000);
+        }
     }
 
     public class TabsAdapter extends FragmentPagerAdapter {
