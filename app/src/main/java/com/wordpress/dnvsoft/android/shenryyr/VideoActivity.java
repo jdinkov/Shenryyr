@@ -69,6 +69,7 @@ public class VideoActivity extends AppCompatActivity
 
         ViewPager mViewPager = (ViewPager) findViewById(R.id.container_video);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.addOnPageChangeListener(onPageChangeListener);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
 
@@ -142,6 +143,23 @@ public class VideoActivity extends AppCompatActivity
             Toast.makeText(VideoActivity.this, result.toString(), Toast.LENGTH_LONG).show();
         }
     }
+
+    ViewPager.OnPageChangeListener onPageChangeListener = new ViewPager.OnPageChangeListener() {
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+        }
+
+        @Override
+        public void onPageSelected(int position) {
+            if (position != 2) {
+                getSupportFragmentManager().popBackStack();
+            }
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
+        }
+    };
 
     private int getItemPosition() {
         return items.size() - videoPosition - 1;
