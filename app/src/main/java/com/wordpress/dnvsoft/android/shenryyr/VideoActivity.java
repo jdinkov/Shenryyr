@@ -174,9 +174,13 @@ public class VideoActivity extends AppCompatActivity
     @Override
     protected void onPause() {
         if (youTubePlayer != null) {
-            currentVideoTime = youTubePlayer.getCurrentTimeMillis();
-            youTubePlayer.release();
-            isMinimized = true;
+            try {
+                currentVideoTime = youTubePlayer.getCurrentTimeMillis();
+                youTubePlayer.release();
+                isMinimized = true;
+            } catch (IllegalStateException exception) {
+                isMinimized =true;
+            }
         }
         super.onPause();
     }
